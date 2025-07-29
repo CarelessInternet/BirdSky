@@ -13,4 +13,5 @@ export default {
 			},
 		],
 	},
+	transpilePackages: ['@uiw/react-md-editor'],
 } satisfies NextConfig;
