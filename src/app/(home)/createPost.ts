@@ -1,43 +1,38 @@
 'use server';
 
-import { ServerValidateError, createServerValidate } from '@tanstack/react-form/nextjs';
-import { formOptions, schema } from './formOptions';
+import { ActionState, schema } from './formOptions';
 import { revalidatePath } from 'next/cache';
 import { auth } from '~/lib/auth/server';
 import { headers } from 'next/headers';
-import { showServerErrorInForm } from '~/lib/form';
 import { database } from '~/lib/database/connection';
 import { post } from '~/lib/database/schema';
-import { z } from 'zod';
+import { errors, rootError } from '~/lib/form';
 
-const serverValidate = createServerValidate({
-	...formOptions,
-	onServerValidate: schema,
-});
+export default async function createPost(initialState: ActionState, formData: FormData): Promise<ActionState> {
+	const fields = { content: formData.get('content') || '' };
+	const validation = schema.safeParse(fields);
 
-export default async function createPost(_: unknown, formData: FormData) {
-	let success = false;
+	if (!validation.success) {
+		return {
+			success: validation.success,
+			errors: errors(validation.error),
+			values: { content: fields.content.toString() },
+		};
+	}
+
+	const session = await auth.api.getSession({ headers: await headers() });
+
+	if (!session) {
+		return rootError({ error: 'Not authenticated.', values: validation.data });
+	}
 
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-
-		if (!session) {
-			return showServerErrorInForm('Not authenticated.');
-		}
-
-		const { content } = await serverValidate(formData);
-		await database.insert(post).values({ authorId: session.user.id, content });
-
-		success = true;
-	} catch (error) {
-		if (error instanceof ServerValidateError) {
-			return error.formState;
-		}
-
-		console.error('Error creating post:', error);
+		await database.insert(post).values({ authorId: session.user.id, content: validation.data.content });
+	} catch {
+		return rootError({ error: 'An unknown server-side error occurred.', values: validation.data });
 	}
 
-	if (success) {
-		revalidatePath('/');
-	}
+	revalidatePath('/');
+
+	return { success: true, values: validation.data };
 }

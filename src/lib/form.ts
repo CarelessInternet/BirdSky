@@ -1,28 +1,27 @@
-import { ServerValidateError } from '@tanstack/react-form/nextjs';
+import type { ZodError } from 'zod';
 
-export function showServerErrorInForm(error: string) {
-	return new ServerValidateError({
-		// @ts-expect-error: onServer is not typed correctly.
-		formState: { errorMap: { onServer: { form: { content: [{ message: error }] } } } },
-	}).formState;
+type BaseActionState<T> = {
+	values: T;
+};
+
+type Errors = Record<string, { message: string }>;
+
+type ActionStateError<T> = { success: false; errors: Errors } & BaseActionState<T>;
+
+type ActionStateSuccess<T> = { success: true } & BaseActionState<T>;
+
+export type ActionState<T> = ActionStateError<T> | ActionStateSuccess<T>;
+
+export function errors(error: ZodError | null) {
+	const list: Errors = {};
+
+	for (const { message, path } of error?.issues || []) {
+		list[path.join('.')] = { message };
+	}
+
+	return list;
 }
 
-// What an abomination but it works. Great API design @tanstack/react-form. No helper functions included?
-export function flattenFormErrors(errors: unknown): string[] {
-	if (!errors || typeof errors !== 'object') return [];
-	const result: string[] = [];
-	for (const key in errors as Record<string, unknown>) {
-		const fieldErrors = (errors as Record<string, unknown>)[key];
-		if (Array.isArray(fieldErrors)) {
-			for (const err of fieldErrors) {
-				if (typeof err === 'string') result.push(err);
-				else if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string')
-					result.push(err.message);
-				else if (err) result.push(String(err));
-			}
-		} else if (fieldErrors && typeof fieldErrors === 'object') {
-			result.push(...flattenFormErrors(fieldErrors));
-		}
-	}
-	return result;
+export function rootError<T>({ error, values }: { error: string; values: T }): ActionStateError<T> {
+	return { success: false, errors: { root: { message: error } }, values };
 }
