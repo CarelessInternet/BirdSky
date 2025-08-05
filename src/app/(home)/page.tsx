@@ -1,4 +1,5 @@
-// todo: show posts and functionality
+// todo (wip): show posts and functionality
+// todo: if no posts, say so.
 // todo: add a loading state for the page
 
 export const experimental_ppr = true;
@@ -9,13 +10,13 @@ import { headers } from 'next/headers';
 import { Suspense } from 'react';
 import Posts from './Posts';
 import { getQueryClient } from '~/lib/query';
-import { fetchPostsOptions } from './fetchPosts';
+import { fetchPostsOptions } from './fetchPostsOptions';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 
 export default async function Page() {
 	const session = await auth.api.getSession({ headers: await headers() });
 	const queryClient = getQueryClient();
-	void queryClient.prefetchQuery(fetchPostsOptions);
+	void queryClient.prefetchInfiniteQuery(fetchPostsOptions);
 
 	return (
 		<main>

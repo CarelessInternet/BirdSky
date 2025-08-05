@@ -42,3 +42,9 @@ export function getQueryClient() {
 		return browserQueryClient;
 	}
 }
+
+export interface InfiniteQueryResult<T> {
+	data: T;
+	previousCursor: number | null;
+	nextCursor: number | null;
+}

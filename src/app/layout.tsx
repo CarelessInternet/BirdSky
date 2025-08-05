@@ -20,6 +20,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head />
+			{/* <head>
+				<script defer src="https://unpkg.com/react-scan/dist/auto.global.js" />
+			</head> */}
 			<body className={cn('flex min-h-screen flex-col', font.className)}>
 				<Providers>
 					<Navbar />
