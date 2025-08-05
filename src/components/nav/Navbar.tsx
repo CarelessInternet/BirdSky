@@ -1,28 +1,15 @@
-import { ChevronDown, Menu, User, Search } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import Link from './Link';
-import ToggleTheme from './ToggleTheme';
-import SignInOrOut from './SignInOrOut';
 import BirdSky from '../../app/favicon.ico';
-import { auth } from '~/lib/auth/server';
-import { headers } from 'next/headers';
 import { Button } from '~/components/ui/button';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
 import { Input } from '~/components/ui/input';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from '~/components/ui/navigation-menu';
+import Dropdown from './Dropdown';
 
-export default async function Component() {
-	const session = await auth.api.getSession({ headers: await headers() });
-
+export default function Component() {
 	return (
 		<header className="bg-background sticky top-0 z-50 flex w-full justify-center border-b shadow-sm backdrop-blur">
 			<div className="container flex h-16 items-center justify-between px-4">
@@ -51,39 +38,7 @@ export default async function Component() {
 				</div>
 
 				<div className="flex items-center space-x-2">
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" size="sm" className="hover:bg-accent/50 flex items-center space-x-1">
-								{session?.user.image ? (
-									<Image
-										src={session.user.image}
-										alt="User Avatar"
-										width={32}
-										height={32}
-										className="mr-2 inline-block rounded-full"
-									/>
-								) : (
-									<User className="size-6" />
-								)}
-								<ChevronDown className="size-3" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" className="w-56">
-							<DropdownMenuLabel>{session?.user.name ?? 'My Account'}</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							{session && (
-								<DropdownMenuItem asChild>
-									<NextLink href={`/users/${session.user.id}`}>
-										<User className="mr-2 size-4" />
-										<span>Profile</span>
-									</NextLink>
-								</DropdownMenuItem>
-							)}
-							<ToggleTheme />
-							<DropdownMenuSeparator />
-							<SignInOrOut />
-						</DropdownMenuContent>
-					</DropdownMenu>
+					<Dropdown />
 
 					<Sheet>
 						<SheetTrigger asChild>

@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 export default {
 	experimental: {
 		reactCompiler: true,
-		// ppr: "incremental",
+		ppr: 'incremental',
 	},
 	images: {
 		remotePatterns: [

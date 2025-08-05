@@ -1,7 +1,6 @@
 'use client';
 
-import MDEditor from '~/components/MDEditor';
-import { getExtraCommands } from '@uiw/react-md-editor';
+import { MarkdownEditor } from '~/components/Markdown';
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { useForm } from 'react-hook-form';
 import { useActionState, useEffect, useState } from 'react';
@@ -22,7 +21,7 @@ import { Loader, RotateCcw, Send, X } from 'lucide-react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 
 export default function CreatePost() {
-	const [state, action, pending] = useActionState(createPost, {
+	const [state, action, isPending] = useActionState(createPost, {
 		success: false,
 		errors: {},
 		values: { content: '# Be free!\n\n![BirdSky Logo](birdsky.png)' },
@@ -40,6 +39,16 @@ export default function CreatePost() {
 			setOpen(false);
 		}
 	}, [state.success]);
+
+	// Overflow is hidden when closing the dialog.
+	// https://github.com/shadcn-ui/ui/issues/6988
+	useEffect(() => {
+		document.body.style.overflow = open ? 'hidden' : 'auto';
+
+		return () => {
+			document.body.style.overflow = 'auto';
+		};
+	}, [open]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -62,16 +71,7 @@ export default function CreatePost() {
 										<FormItem>
 											<FormLabel>Content:</FormLabel>
 											<FormControl>
-												<MDEditor
-													// The name field is very important to receive the correct form data!
-													textareaProps={{ ...field }}
-													value={field.value}
-													onChange={field.onChange}
-													// Do not allow going into fullscreen mode.
-													extraCommands={getExtraCommands().filter((command) => command.keyCommand === 'preview')}
-													height={300}
-													spellCheck
-												/>
+												<MarkdownEditor textareaProps={{ ...field }} value={field.value} onChange={field.onChange} />
 											</FormControl>
 											<FormDescription>You can even attach images and create tables!</FormDescription>
 											<FormMessage />
@@ -99,8 +99,8 @@ export default function CreatePost() {
 								<RotateCcw />
 								Reset
 							</Button>
-							<Button type="submit" disabled={!form.formState.isValid || pending}>
-								{pending ? <Loader className="animate-spin" /> : <Send />} Post!
+							<Button type="submit" disabled={!form.formState.isValid || isPending}>
+								{isPending ? <Loader className="animate-spin" /> : <Send />} Post!
 							</Button>
 						</DialogFooter>
 					</form>

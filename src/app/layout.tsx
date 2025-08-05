@@ -2,8 +2,8 @@ import './globals.css';
 import { DM_Sans } from 'next/font/google';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
-import ThemeProvider from '~/components/ThemeProvider';
-import Navbar from '~/components/Nav/Navbar';
+import Providers from '~/components/Providers';
+import Navbar from '~/components/nav/Navbar';
 import { cn } from '~/lib/utils';
 
 const font = DM_Sans({
@@ -20,10 +20,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
 		<html lang="en" suppressHydrationWarning>
 			<head />
 			<body className={cn('flex min-h-screen flex-col', font.className)}>
-				<ThemeProvider>
+				<Providers>
 					<Navbar />
 					{children}
-				</ThemeProvider>
+				</Providers>
 			</body>
 		</html>
 	);

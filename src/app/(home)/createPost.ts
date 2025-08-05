@@ -8,7 +8,7 @@ import { database } from '~/lib/database/connection';
 import { post } from '~/lib/database/schema';
 import { errors, rootError } from '~/lib/form';
 
-export default async function createPost(initialState: ActionState, formData: FormData): Promise<ActionState> {
+export default async function createPost(_initialState: ActionState, formData: FormData): Promise<ActionState> {
 	const fields = { content: formData.get('content') || '' };
 	const validation = schema.safeParse(fields);
 
@@ -27,9 +27,9 @@ export default async function createPost(initialState: ActionState, formData: Fo
 	}
 
 	try {
-		await database.insert(post).values({ authorId: session.user.id, content: validation.data.content });
+		await database.insert(post).values({ userId: session.user.id, content: validation.data.content });
 	} catch {
-		return rootError({ error: 'An unknown server-side error occurred.', values: validation.data });
+		return rootError({ error: 'A server-side error occurred while creating the post.', values: validation.data });
 	}
 
 	revalidatePath('/');

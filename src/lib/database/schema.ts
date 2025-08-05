@@ -1,21 +1,20 @@
-import { sql } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { pgTable, text, timestamp, boolean, index, foreignKey, uuid } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
 	email: text('email').notNull().unique(),
-	emailVerified: boolean('email_verified')
-		.$defaultFn(() => !1)
-		.notNull(),
+	emailVerified: boolean('email_verified').default(false).notNull(),
 	image: text('image'),
-	createdAt: timestamp('created_at')
-		.$defaultFn(() => new Date())
-		.notNull(),
-	updatedAt: timestamp('updated_at')
-		.$defaultFn(() => new Date())
-		.notNull(),
+	createdAt: timestamp('created_at').defaultNow().notNull(),
+	updatedAt: timestamp('updated_at').defaultNow().notNull(),
+	verified: boolean('verified').default(false).notNull(),
 });
+
+export const userRelations = relations(user, ({ many }) => ({
+	posts: many(post),
+}));
 
 export const session = pgTable('session', {
 	id: text('id').primaryKey(),
@@ -53,8 +52,8 @@ export const verification = pgTable('verification', {
 	identifier: text('identifier').notNull(),
 	value: text('value').notNull(),
 	expiresAt: timestamp('expires_at').notNull(),
-	createdAt: timestamp('created_at').$defaultFn(() => new Date()),
-	updatedAt: timestamp('updated_at').$defaultFn(() => new Date()),
+	createdAt: timestamp('created_at').defaultNow(),
+	updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 export const post = pgTable(
@@ -63,25 +62,38 @@ export const post = pgTable(
 		id: uuid('id')
 			.primaryKey()
 			.default(sql`uuidv7()`),
-		authorId: text('author_id')
+		userId: text('user_id')
 			.notNull()
 			.references(() => user.id),
 		content: text('content'),
 		// Reposts.
 		originalPostId: uuid('original_post_id'),
-		createdAt: timestamp('created_at')
-			.$defaultFn(() => new Date())
-			.notNull(),
+		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [
 		foreignKey({
 			columns: [table.originalPostId],
 			foreignColumns: [table.id],
 		}),
-		index().on(table.authorId),
+		index().on(table.userId),
 		index().on(table.originalPostId),
 	],
 );
+
+export const postRelations = relations(post, ({ one, many }) => ({
+	author: one(user, { fields: [post.userId], references: [user.id] }),
+	likes: many(like),
+	replies: many(reply),
+	reposts: many(post, {
+		// Child-side: posts that reference this post via originalPostId.
+		relationName: 'reposts',
+	}),
+	originalPost: one(post, {
+		fields: [post.originalPostId],
+		references: [post.id],
+		relationName: 'reposts',
+	}),
+}));
 
 export const like = pgTable(
 	'like',
@@ -95,12 +107,15 @@ export const like = pgTable(
 		postId: uuid('post_id')
 			.notNull()
 			.references(() => post.id, { onDelete: 'cascade' }),
-		createdAt: timestamp('created_at')
-			.$defaultFn(() => new Date())
-			.notNull(),
+		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [index().on(table.userId), index().on(table.postId)],
 );
+
+export const likeRelations = relations(like, ({ one }) => ({
+	author: one(user, { fields: [like.userId], references: [user.id] }),
+	post: one(post, { fields: [like.postId], references: [post.id] }),
+}));
 
 export const reply = pgTable(
 	'reply',
@@ -117,9 +132,7 @@ export const reply = pgTable(
 			.references(() => post.id, { onDelete: 'cascade' }),
 		// Nested replies.
 		parentReplyId: uuid('parent_reply_id'),
-		createdAt: timestamp('created_at')
-			.$defaultFn(() => new Date())
-			.notNull(),
+		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [
 		foreignKey({
@@ -131,6 +144,11 @@ export const reply = pgTable(
 		index().on(table.parentReplyId),
 	],
 );
+
+export const replyRelations = relations(reply, ({ one, many }) => ({
+	author: one(user, { fields: [reply.userId], references: [user.id] }),
+	likes: many(replyLike),
+}));
 
 export const replyLike = pgTable(
 	'reply_like',
@@ -144,9 +162,12 @@ export const replyLike = pgTable(
 		replyId: uuid('reply_id')
 			.notNull()
 			.references(() => reply.id, { onDelete: 'cascade' }),
-		createdAt: timestamp('created_at')
-			.$defaultFn(() => new Date())
-			.notNull(),
+		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [index().on(table.userId), index().on(table.replyId)],
 );
+
+export const replyLikeRelations = relations(replyLike, ({ one }) => ({
+	author: one(user, { fields: [replyLike.userId], references: [user.id] }),
+	reply: one(post, { fields: [replyLike.replyId], references: [post.id] }),
+}));
