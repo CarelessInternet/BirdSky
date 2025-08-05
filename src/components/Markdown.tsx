@@ -2,6 +2,7 @@
 
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
+import './Markdown.css';
 import dynamic from 'next/dynamic';
 import { Loader } from 'lucide-react';
 import type { ComponentProps } from 'react';
@@ -41,5 +42,5 @@ export function MarkdownEditor(props: ComponentProps<typeof MDEditor>) {
 }
 
 export function MarkdownView(props: ComponentProps<typeof MDView>) {
-	return <MDView className="bg-transparent!" rehypePlugins={[rehypeSanitize]} {...props} />;
+	return <MDView className="px-1" rehypePlugins={[rehypeSanitize]} {...props} />;
 }

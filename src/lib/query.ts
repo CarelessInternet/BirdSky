@@ -1,4 +1,5 @@
 import { isServer, QueryClient, defaultShouldDehydrateQuery } from '@tanstack/react-query';
+import superjson from 'superjson';
 
 function makeQueryClient() {
 	return new QueryClient({
@@ -17,6 +18,10 @@ function makeQueryClient() {
 					// with better digests.
 					return false;
 				},
+				serializeData: superjson.serialize,
+			},
+			hydrate: {
+				deserializeData: superjson.deserialize,
 			},
 		},
 	});

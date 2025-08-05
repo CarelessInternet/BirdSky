@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import Providers from '~/components/Providers';
 import Navbar from '~/components/nav/Navbar';
+import { Toaster } from '~/components/ui/sonner';
 import { cn } from '~/lib/utils';
 
 const font = DM_Sans({
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 				<Providers>
 					<Navbar />
 					{children}
+					<Toaster />
 				</Providers>
 			</body>
 		</html>

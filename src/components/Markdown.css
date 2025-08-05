@@ -1,0 +1,5 @@
+/* https://github.com/uiwjs/react-markdown-preview/blob/a53be1e93fb1c2327649c4a6b084adb80679affa/src/styles/markdown.less#L1-L193 */
+.wmde-markdown,
+.wmde-markdown-var {
+	--color-canvas-default: var(--card) !important;
+}
