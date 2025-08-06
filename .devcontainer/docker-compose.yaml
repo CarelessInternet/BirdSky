@@ -13,7 +13,7 @@ services:
     volumes:
       - birdsky-database-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: 'Birdsky'
+      POSTGRES_DB: 'BirdSky'
       POSTGRES_USER: 'dev_container'
       POSTGRES_PASSWORD: '12345678'
     ports:

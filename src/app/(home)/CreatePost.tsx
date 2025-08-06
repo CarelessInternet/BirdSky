@@ -53,7 +53,7 @@ export default function CreatePost() {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button>Create</Button>
+				<Button>Create a Post</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-2/3">
 				<Form {...form}>

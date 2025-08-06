@@ -8,13 +8,17 @@ import type { InfiniteQueryResult } from '~/lib/query';
 export default async function getPosts({ pageParam: offset }: { pageParam: number }) {
 	await setTimeout(5_000);
 
-	const PAGE_LIMIT = 2;
+	const PAGE_LIMIT = 5;
 	const data = await database.query.post.findMany({
 		columns: { content: true, createdAt: true, id: true },
 		with: {
 			author: { columns: { id: true, image: true, name: true, verified: true } },
+			session: { columns: { userAgent: true } },
 			// likes: { columns: { id: true, userId: true } },
-			originalPost: { columns: { content: true, createdAt: true } },
+			originalPost: {
+				columns: { content: true, createdAt: true },
+				with: { author: { columns: { id: true, image: true, name: true, verified: true } } },
+			},
 			// reposts: { with: { author: { columns: { id: true, image: true, name: true } } } },
 		},
 		// _post is bugged when trying to select from that table.

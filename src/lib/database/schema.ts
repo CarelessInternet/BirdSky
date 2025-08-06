@@ -65,6 +65,9 @@ export const post = pgTable(
 		userId: text('user_id')
 			.notNull()
 			.references(() => user.id),
+		sessionId: text('session_id')
+			.notNull()
+			.references(() => session.id),
 		content: text('content'),
 		// Reposts.
 		originalPostId: uuid('original_post_id'),
@@ -76,12 +79,14 @@ export const post = pgTable(
 			foreignColumns: [table.id],
 		}),
 		index().on(table.userId),
+		index().on(table.sessionId),
 		index().on(table.originalPostId),
 	],
 );
 
 export const postRelations = relations(post, ({ one, many }) => ({
 	author: one(user, { fields: [post.userId], references: [user.id] }),
+	session: one(session, { fields: [post.sessionId], references: [session.id] }),
 	likes: many(like),
 	replies: many(reply),
 	reposts: many(post, {
@@ -104,16 +109,20 @@ export const like = pgTable(
 		userId: text('user_id')
 			.notNull()
 			.references(() => user.id),
+		sessionId: text('session_id')
+			.notNull()
+			.references(() => session.id),
 		postId: uuid('post_id')
 			.notNull()
 			.references(() => post.id, { onDelete: 'cascade' }),
 		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
-	(table) => [index().on(table.userId), index().on(table.postId)],
+	(table) => [index().on(table.userId), index().on(table.sessionId), index().on(table.postId)],
 );
 
 export const likeRelations = relations(like, ({ one }) => ({
 	author: one(user, { fields: [like.userId], references: [user.id] }),
+	session: one(session, { fields: [like.sessionId], references: [session.id] }),
 	post: one(post, { fields: [like.postId], references: [post.id] }),
 }));
 
@@ -126,6 +135,9 @@ export const reply = pgTable(
 		userId: text('user_id')
 			.notNull()
 			.references(() => user.id),
+		sessionId: text('session_id')
+			.notNull()
+			.references(() => session.id),
 		content: text('content').notNull(),
 		postId: uuid('post_id')
 			.notNull()
@@ -140,6 +152,7 @@ export const reply = pgTable(
 			foreignColumns: [table.id],
 		}),
 		index().on(table.userId),
+		index().on(table.sessionId),
 		index().on(table.postId),
 		index().on(table.parentReplyId),
 	],
@@ -147,6 +160,7 @@ export const reply = pgTable(
 
 export const replyRelations = relations(reply, ({ one, many }) => ({
 	author: one(user, { fields: [reply.userId], references: [user.id] }),
+	session: one(session, { fields: [reply.sessionId], references: [session.id] }),
 	likes: many(replyLike),
 }));
 
@@ -159,15 +173,19 @@ export const replyLike = pgTable(
 		userId: text('user_id')
 			.notNull()
 			.references(() => user.id),
+		sessionId: text('session_id')
+			.notNull()
+			.references(() => session.id),
 		replyId: uuid('reply_id')
 			.notNull()
 			.references(() => reply.id, { onDelete: 'cascade' }),
 		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
-	(table) => [index().on(table.userId), index().on(table.replyId)],
+	(table) => [index().on(table.userId), index().on(table.sessionId), index().on(table.replyId)],
 );
 
 export const replyLikeRelations = relations(replyLike, ({ one }) => ({
 	author: one(user, { fields: [replyLike.userId], references: [user.id] }),
+	session: one(session, { fields: [replyLike.sessionId], references: [session.id] }),
 	reply: one(post, { fields: [replyLike.replyId], references: [post.id] }),
 }));

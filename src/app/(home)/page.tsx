@@ -1,6 +1,5 @@
 // todo (wip): show posts and functionality
-// todo: if no posts, say so.
-// todo: add a loading state for the page
+// todo: add a proper loading state for the page
 
 export const experimental_ppr = true;
 
@@ -20,13 +19,20 @@ export default async function Page() {
 
 	return (
 		<main>
-			{session && <CreatePost />}
-			<p>Other content</p>
-			<HydrationBoundary state={dehydrate(queryClient)}>
-				<Suspense fallback={<div>Loading...</div>}>
-					<Posts />
-				</Suspense>
-			</HydrationBoundary>
+			<div className="mx-auto max-w-2xl px-4 py-4">
+				<div className="space-y-16">
+					{session && (
+						<div className="flex justify-center">
+							<CreatePost />
+						</div>
+					)}
+					<HydrationBoundary state={dehydrate(queryClient)}>
+						<Suspense fallback={<div>Loading...</div>}>
+							<Posts isLoggedIn={!!session} />
+						</Suspense>
+					</HydrationBoundary>
+				</div>
+			</div>
 		</main>
 	);
 }

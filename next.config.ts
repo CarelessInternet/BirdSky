@@ -12,6 +12,7 @@ export default {
 				hostname: 'avatars.githubusercontent.com',
 			},
 		],
+		unoptimized: true,
 	},
 	transpilePackages: ['@uiw/react-md-editor'],
 } satisfies NextConfig;

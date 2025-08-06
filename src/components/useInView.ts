@@ -6,7 +6,7 @@
 
 import { useRef, useEffect, useState } from 'react';
 
-export function useInfiniteScroll<T extends HTMLElement>() {
+export default function useInView<T extends HTMLElement>() {
 	const ref = useRef<T>(null);
 	const [inView, setInView] = useState(false);
 

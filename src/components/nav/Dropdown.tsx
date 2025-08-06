@@ -44,7 +44,16 @@ export default function Dropdown() {
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-56">
-				<DropdownMenuLabel>{isPending ? 'Loading...' : (data?.user.name ?? 'My Account')}</DropdownMenuLabel>
+				<DropdownMenuLabel>
+					{isPending ? (
+						'Loading...'
+					) : (
+						<div className="flex flex-col">
+							<span>{data?.user.name ?? 'My Account'}</span>
+							{!!data?.session.id && <span className="text-muted-foreground truncate text-xs">{data.session.id}</span>}
+						</div>
+					)}
+				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				{!isPending && data && (
 					<DropdownMenuItem asChild>
