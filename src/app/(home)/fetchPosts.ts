@@ -1,23 +1,25 @@
 'use server';
 
-import { setTimeout } from 'node:timers/promises';
+import { headers } from 'next/headers';
+import { auth } from '~/lib/auth/server';
 import { database } from '~/lib/database/connection';
 import { like, post, reply } from '~/lib/database/schema';
 import type { InfiniteQueryResult } from '~/lib/query';
 
 export default async function getPosts({ pageParam: offset }: { pageParam: number }) {
-	await setTimeout(5_000);
-
 	const PAGE_LIMIT = 5;
+	const authorColumns = { id: true, image: true, name: true, verified: true };
+
+	const session = await auth.api.getSession({ headers: await headers() });
 	const data = await database.query.post.findMany({
 		columns: { content: true, createdAt: true, id: true },
 		with: {
-			author: { columns: { id: true, image: true, name: true, verified: true } },
+			author: { columns: authorColumns },
 			session: { columns: { userAgent: true } },
-			// likes: { columns: { id: true, userId: true } },
+			// likes: { columns: { id: true }, with: { author: { columns: authorColumns } } },
 			originalPost: {
 				columns: { content: true, createdAt: true },
-				with: { author: { columns: { id: true, image: true, name: true, verified: true } } },
+				with: { author: { columns: authorColumns } },
 			},
 			// reposts: { with: { author: { columns: { id: true, image: true, name: true } } } },
 		},
@@ -28,11 +30,20 @@ export default async function getPosts({ pageParam: offset }: { pageParam: numbe
 			// replyCount: sql<number>`SELECT ${count()} FROM ${reply} WHERE ${eq(reply.postId, post.id)}`.as('reply_count'),
 			// Using different tables is broken when using "extras".
 			// https://github.com/drizzle-team/drizzle-orm/issues/3564
-			replyCount: sql<number>`(SELECT count(*) FROM ${reply} WHERE "reply"."post_id" = ${post.id})`.as('reply_count'),
-			repostCount: sql<number>`(SELECT count(*) FROM ${post} WHERE ${post.originalPostId} = ${post.id})`.as(
-				'repost_count',
+			replyCount: sql<number>`(SELECT cast(count(*) as int) FROM ${reply} WHERE "reply"."post_id" = ${post.id})`.as(
+				'reply_count',
 			),
-			likeCount: sql<number>`(SELECT count(*) FROM ${like} WHERE "like"."post_id" = ${post.id})`.as('like_count'),
+			repostCount:
+				sql<number>`(SELECT cast(count(*) as int) FROM ${post} WHERE ${post.originalPostId} = ${post.id})`.as(
+					'repost_count',
+				),
+			likeCount: sql<number>`(SELECT cast(count(*) as int) FROM ${like} WHERE "like"."post_id" = ${post.id})`.as(
+				'like_count',
+			),
+			hasUserLiked:
+				sql<boolean>`(EXISTS (SELECT 1 FROM ${like} WHERE "like"."post_id" = ${post.id} AND "like"."user_id" = ${session?.user.id}))`.as(
+					'has_liked',
+				),
 		}),
 		// extras: (post) => ({
 		// 	// The method below does not work because it's bugged.

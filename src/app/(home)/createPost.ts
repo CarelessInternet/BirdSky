@@ -29,7 +29,7 @@ export default async function createPost(_initialState: ActionState, formData: F
 	try {
 		await database
 			.insert(post)
-			.values({ userId: session.user.id, sessionId: session.session.id, content: validation.data.content });
+			.values({ sessionId: session.session.id, userId: session.user.id, content: validation.data.content });
 	} catch {
 		return rootError({ error: 'A server-side error occurred while creating the post.', values: validation.data });
 	}

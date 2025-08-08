@@ -32,7 +32,7 @@ export default function Dropdown() {
 					{!isPending && data?.user.image ? (
 						<Image
 							src={data.user.image}
-							alt="User Avatar"
+							alt={`${data.user.name}'s Avatar`}
 							width={32}
 							height={32}
 							className="mr-2 inline-block rounded-full"
@@ -50,7 +50,7 @@ export default function Dropdown() {
 					) : (
 						<div className="flex flex-col">
 							<span>{data?.user.name ?? 'My Account'}</span>
-							{!!data?.session.id && <span className="text-muted-foreground truncate text-xs">{data.session.id}</span>}
+							{!!data && <span className="text-muted-foreground truncate text-xs">{data.user.id}</span>}
 						</div>
 					)}
 				</DropdownMenuLabel>

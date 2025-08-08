@@ -9,6 +9,7 @@ import type { ComponentProps } from 'react';
 import { getExtraCommands } from '@uiw/react-md-editor';
 // rehype-sanitize gets rid of GitHub alerts in Markdown syntax :(.
 import rehypeSanitize from 'rehype-sanitize';
+import { cn } from '~/lib/utils';
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
 	loading: () => (
@@ -28,10 +29,11 @@ const MDView = dynamic(() => import('@uiw/react-md-editor').then((mod) => mod.de
 	),
 });
 
-export function MarkdownEditor(props: ComponentProps<typeof MDEditor>) {
+export function MarkdownEditor({ className, ...props }: ComponentProps<typeof MDEditor>) {
 	return (
 		<MDEditor
 			previewOptions={{ rehypePlugins: [rehypeSanitize] }}
+			className={cn('whitespace-pre-wrap', className)}
 			// Do not allow going into fullscreen mode.
 			extraCommands={getExtraCommands().filter((command) => command.keyCommand === 'preview')}
 			height={300}
@@ -41,6 +43,6 @@ export function MarkdownEditor(props: ComponentProps<typeof MDEditor>) {
 	);
 }
 
-export function MarkdownView(props: ComponentProps<typeof MDView>) {
-	return <MDView className="px-1" rehypePlugins={[rehypeSanitize]} {...props} />;
+export function MarkdownView({ className, ...props }: ComponentProps<typeof MDView>) {
+	return <MDView className={cn('px-1 whitespace-pre-wrap', className)} rehypePlugins={[rehypeSanitize]} {...props} />;
 }
