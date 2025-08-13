@@ -1,5 +1,3 @@
-// TODO: make the code better
-
 'use client';
 
 import { Heart, Loader } from 'lucide-react';
@@ -9,29 +7,33 @@ import { givePostLike } from './postLike';
 import type { like } from '~/lib/database/schema';
 import { getQueryClient } from '~/lib/query';
 import { useState } from 'react';
+import type { auth } from '~/lib/auth/server';
+import type { PostLikes } from './types';
 
 export default function PostLike({
-	hasUserLiked: serverHasUserLiked,
 	id,
 	likes: serverLikes,
+	userId,
 }: {
-	hasUserLiked: boolean;
 	id: typeof like.$inferSelect.postId;
-	likes: number;
+	likes: PostLikes;
+	userId?: typeof auth.$Infer.Session.user.id;
 }) {
-	const [hasUserLiked, setHasUserLiked] = useState(serverHasUserLiked);
-	const [likes, setLikes] = useState(serverLikes);
+	const [hasUserLiked, setHasUserLiked] = useState(serverLikes.some((like) => like.author.id === userId));
+	const [likes, setLikes] = useState(serverLikes.length);
+
+	const toggleLike = () => {
+		setHasUserLiked((liked) => !liked);
+		setLikes((amount) => amount + (hasUserLiked ? -1 : 1));
+	};
+
 	const queryClient = getQueryClient();
 	const mutation = useMutation({
 		mutationFn: givePostLike,
-		onMutate: () => {
-			setHasUserLiked((liked) => !liked);
-			setLikes((amount) => amount + (hasUserLiked ? -1 : 1));
-		},
-		onSuccess: (newLikes) => {
-			setLikes(newLikes);
-		},
-		onSettled: () => queryClient.invalidateQueries({ queryKey: ['post-likes'] }),
+		onMutate: toggleLike,
+		onSuccess: (newLikes) => setLikes(newLikes),
+		onError: toggleLike,
+		onSettled: () => queryClient.invalidateQueries({ queryKey: ['post-likes', id] }),
 	});
 
 	return (
@@ -39,12 +41,14 @@ export default function PostLike({
 			variant="ghost"
 			size="lg"
 			className={'hover:text-rose-500' + (hasUserLiked ? ' text-red-500' : '')}
-			onClick={() => {
-				mutation.mutate(id);
-			}}
+			onClick={() => mutation.mutate(id)}
 			disabled={mutation.isPending}
 		>
-			{mutation.isPending ? <Loader className="size-5 animate-spin" /> : <Heart className="size-5" />}
+			{mutation.isPending ? (
+				<Loader className="size-5 animate-spin" />
+			) : (
+				<Heart className={'size-5' + (hasUserLiked ? ' fill-red-500' : '')} />
+			)}
 			{likes}
 		</Button>
 	);

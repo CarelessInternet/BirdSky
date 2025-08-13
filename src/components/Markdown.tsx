@@ -24,7 +24,7 @@ const MDView = dynamic(() => import('@uiw/react-md-editor').then((mod) => mod.de
 	loading: () => (
 		<div className="flex flex-row items-center">
 			<Loader className="mr-2 size-4 animate-spin" />
-			<span>Loading view...</span>
+			<span>Loading content...</span>
 		</div>
 	),
 });

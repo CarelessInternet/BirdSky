@@ -8,13 +8,3 @@ export const schema = z.object({
 });
 
 export type Schema = z.infer<typeof schema>;
-
-type BaseActionState = {
-	values: Schema;
-};
-
-export type ActionStateError = Record<string, { message: string }>;
-
-export type ActionState =
-	| ({ success: false; errors: ActionStateError } & BaseActionState)
-	| ({ success: true } & BaseActionState);

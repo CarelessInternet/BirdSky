@@ -1,14 +1,14 @@
 'use server';
 
-import { ActionState, schema } from './formOptions';
+import { type Schema, schema } from './formOptions';
 import { revalidatePath } from 'next/cache';
 import { auth } from '~/lib/auth/server';
 import { headers } from 'next/headers';
 import { database } from '~/lib/database/connection';
 import { post } from '~/lib/database/schema';
-import { errors, rootError } from '~/lib/form';
+import { type ActionState, errors, rootError } from '~/lib/form';
 
-export default async function createPost(_initialState: ActionState, formData: FormData): Promise<ActionState> {
+export default async function createPost(_: ActionState<Schema>, formData: FormData): Promise<ActionState<Schema>> {
 	const fields = { content: formData.get('content') || '' };
 	const validation = schema.safeParse(fields);
 
@@ -29,7 +29,7 @@ export default async function createPost(_initialState: ActionState, formData: F
 	try {
 		await database
 			.insert(post)
-			.values({ sessionId: session.session.id, userId: session.user.id, content: validation.data.content });
+			.values({ userId: session.user.id, content: validation.data.content, userAgent: session.session.userAgent });
 	} catch {
 		return rootError({ error: 'A server-side error occurred while creating the post.', values: validation.data });
 	}

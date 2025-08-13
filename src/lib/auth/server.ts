@@ -15,6 +15,9 @@ export const auth = betterAuth({
 		},
 	}),
 	plugins: [nextCookies()],
+	emailAndPassword: {
+		enabled: true,
+	},
 	socialProviders: {
 		github: {
 			clientId: env.GITHUB_CLIENT_ID,
@@ -25,7 +28,7 @@ export const auth = betterAuth({
 		additionalFields: {
 			verified: {
 				type: 'boolean',
-				required: true,
+				required: false,
 				defaultValue: false,
 				input: false,
 			},

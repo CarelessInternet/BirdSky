@@ -3,17 +3,28 @@
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../ui/dropdown-menu';
 import { ClipboardCheck, Heart, MoreHorizontal, Share } from 'lucide-react';
 import { Button } from '../ui/button';
-import { post } from '~/lib/database/schema';
 import { toast } from 'sonner';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { postLikes } from './postLike';
 import { useQuery } from '@tanstack/react-query';
+import type { post } from '~/lib/database/schema';
+import type { PostLikes } from './types';
 
-export default function PostDropdown({ id }: { id: typeof post.$inferSelect.id }) {
-	const { data: likes } = useQuery({ queryKey: ['post-likes', id], queryFn: () => postLikes(id) });
+export default function PostDropdown({
+	id,
+	initialLikes,
+}: {
+	id: typeof post.$inferSelect.id;
+	initialLikes: PostLikes;
+}) {
+	const { data: likes } = useQuery({
+		queryKey: ['post-likes', id],
+		queryFn: () => postLikes(id),
+		initialData: initialLikes,
+	});
 
 	return (
-		<Sheet>
+		<Dialog>
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button variant="ghost" size="sm">
@@ -36,20 +47,20 @@ export default function PostDropdown({ id }: { id: typeof post.$inferSelect.id }
 						<Share />
 						Share
 					</DropdownMenuItem>
-					<SheetTrigger asChild>
+					<DialogTrigger asChild>
 						<DropdownMenuItem className="focus:text-destructive">
 							<Heart />
 							<span>See who liked the post</span>
 						</DropdownMenuItem>
-					</SheetTrigger>
+					</DialogTrigger>
 				</DropdownMenuContent>
 			</DropdownMenu>
-			<SheetContent>
-				<SheetHeader>
-					<SheetTitle>wsehew</SheetTitle>
-					<SheetDescription>Likes: {likes?.map((like) => like.author.name)}</SheetDescription>
-				</SheetHeader>
-			</SheetContent>
-		</Sheet>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>wsehew</DialogTitle>
+					<DialogDescription>Likes: {likes?.map((like) => like.author.name)}</DialogDescription>
+				</DialogHeader>
+			</DialogContent>
+		</Dialog>
 	);
 }

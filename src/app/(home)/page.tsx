@@ -18,20 +18,18 @@ export default async function Page() {
 	void queryClient.prefetchInfiniteQuery(fetchPostsOptions);
 
 	return (
-		<main>
-			<div className="mx-auto max-w-2xl px-4 py-4">
-				<div className="space-y-16">
-					{session && (
-						<div className="flex justify-center">
-							<CreatePost />
-						</div>
-					)}
-					<HydrationBoundary state={dehydrate(queryClient)}>
-						<Suspense fallback={<div>Loading...</div>}>
-							<Posts isLoggedIn={!!session} />
-						</Suspense>
-					</HydrationBoundary>
-				</div>
+		<main className="mx-auto w-full max-w-2xl px-4 py-4">
+			<div className="space-y-16">
+				{session && (
+					<div className="flex justify-center">
+						<CreatePost />
+					</div>
+				)}
+				<HydrationBoundary state={dehydrate(queryClient)}>
+					<Suspense fallback={<div>Loading...</div>}>
+						<Posts userId={session?.user.id} />
+					</Suspense>
+				</HydrationBoundary>
 			</div>
 		</main>
 	);

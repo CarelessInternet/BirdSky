@@ -10,8 +10,9 @@ import PostDropdown from './PostDropdown';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import { getOS } from '~/lib/getOS';
 import PostLike from './PostLike';
+import type { auth } from '~/lib/auth/server';
 
-export default function Post({ post }: { post: any }) {
+export default function Post({ post, userId }: { post: any; userId?: typeof auth.$Infer.Session.user.id }) {
 	function ProfilePicture() {
 		return (
 			<Avatar className="size-12">
@@ -70,14 +71,14 @@ export default function Post({ post }: { post: any }) {
 										<NameAndVerifiedBadge />
 									</div>
 									<span className="text-muted-foreground text-xs">{post.author.id}</span>
-									<span className="text-muted-foreground text-xs">BirdSky for {getOS(post.session.userAgent)}</span>
+									<span className="text-muted-foreground text-xs">BirdSky for {getOS(post.userAgent)}</span>
 								</div>
 								<p className="text-sm">Joined {getMonthAndYear(post.author.createdAt)}</p>
 							</div>
 						</div>
 					</HoverCardContent>
 				</HoverCard>
-				<PostDropdown id={post.id} />
+				<PostDropdown id={post.id} initialLikes={post.likes} />
 			</CardHeader>
 			{/* This allows screenshotting only the content: */}
 			<div>
@@ -98,7 +99,7 @@ export default function Post({ post }: { post: any }) {
 					<Repeat2 className="size-5" />
 					{post.repostCount}
 				</Button>
-				<PostLike likes={post.likeCount} id={post.id} hasUserLiked={post.hasUserLiked} />
+				<PostLike likes={post.likes} id={post.id} userId={userId} />
 			</CardFooter>
 		</Card>
 	);

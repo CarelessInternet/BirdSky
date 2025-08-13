@@ -14,7 +14,7 @@ export async function postLikes(postId: typeof like.$inferSelect.postId) {
 	}
 
 	return database.query.like.findMany({
-		columns: {},
+		columns: { id: true },
 		with: { author: { columns: { id: true, image: true, name: true, verified: true } } },
 		where: (like, { eq }) => eq(like.postId, postId),
 		orderBy: (like, { desc }) => desc(like.createdAt),
@@ -40,11 +40,4 @@ export async function givePostLike(postId: typeof like.$inferSelect.postId) {
 	}
 
 	return database.$count(like, eq(like.postId, postId));
-
-	// const authorLike = likes.find((like) => like.userId === session.user.id);
-
-	// if (authorLike) {
-	// 	await database.delete(like).where(eq(like.id, authorLike.id));
-	// } else {
-	// }
 }

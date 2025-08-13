@@ -6,12 +6,13 @@ import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { Fragment, useEffect } from 'react';
 import useInView from '~/components/useInView';
 import { Card, CardContent } from '~/components/ui/card';
-import { ArrowDown, FileText } from 'lucide-react';
+import { ArrowDown, FileText, LogIn } from 'lucide-react';
 import CreatePost from './CreatePost';
-import { signIn } from '~/lib/auth/client';
 import { Button } from '~/components/ui/button';
+import { auth } from '~/lib/auth/server';
+import Link from 'next/link';
 
-export default function Posts({ isLoggedIn }: { isLoggedIn: boolean }) {
+export default function Posts({ userId }: { userId?: typeof auth.$Infer.Session.user.id }) {
 	const { data, fetchNextPage } = useSuspenseInfiniteQuery(fetchPostsOptions);
 	const { inView, ref } = useInView<HTMLInputElement>();
 
@@ -29,7 +30,7 @@ export default function Posts({ isLoggedIn }: { isLoggedIn: boolean }) {
 				data.pages.map((page) => (
 					<Fragment key={page.nextCursor}>
 						{page.data.map((post) => (
-							<Post key={post.id} post={post} />
+							<Post key={post.id} post={post} userId={userId} />
 						))}
 					</Fragment>
 				))
@@ -44,15 +45,14 @@ export default function Posts({ isLoggedIn }: { isLoggedIn: boolean }) {
 							There is not a single post created yet. Let&apos;s change that!
 						</p>
 						<ArrowDown className="ring-primary/50 text-primary mb-4 size-10 animate-bounce rounded-full ring-3" />
-						{isLoggedIn ? (
+						{userId ? (
 							<CreatePost />
 						) : (
-							<Button
-								onClick={async () => {
-									await signIn.social({ provider: 'github', callbackURL: '/' });
-								}}
-							>
-								Sign in with GitHub
+							<Button asChild>
+								<Link href="/auth/signin">
+									<LogIn />
+									Sign in
+								</Link>
 							</Button>
 						)}
 					</CardContent>

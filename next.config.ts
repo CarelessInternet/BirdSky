@@ -4,14 +4,9 @@ export default {
 	experimental: {
 		reactCompiler: true,
 		ppr: 'incremental',
+		typedRoutes: true,
 	},
 	images: {
-		remotePatterns: [
-			{
-				protocol: 'https',
-				hostname: 'avatars.githubusercontent.com',
-			},
-		],
 		unoptimized: true,
 	},
 	transpilePackages: ['@uiw/react-md-editor'],

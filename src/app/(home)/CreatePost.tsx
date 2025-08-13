@@ -17,7 +17,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '~/components/ui/dialog';
-import { Loader, RotateCcw, Send, X } from 'lucide-react';
+import { Loader, RotateCcw, Send, SquarePen, X } from 'lucide-react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 
 export default function CreatePost() {
@@ -53,7 +53,10 @@ export default function CreatePost() {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button>Create a Post</Button>
+				<Button>
+					<SquarePen />
+					Create a Post
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-2/3">
 				<Form {...form}>

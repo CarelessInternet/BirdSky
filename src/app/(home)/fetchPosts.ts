@@ -1,22 +1,18 @@
 'use server';
 
-import { headers } from 'next/headers';
-import { auth } from '~/lib/auth/server';
 import { database } from '~/lib/database/connection';
-import { like, post, reply } from '~/lib/database/schema';
+import { post, reply } from '~/lib/database/schema';
 import type { InfiniteQueryResult } from '~/lib/query';
 
 export default async function getPosts({ pageParam: offset }: { pageParam: number }) {
 	const PAGE_LIMIT = 5;
-	const authorColumns = { id: true, image: true, name: true, verified: true };
+	const authorColumns = { createdAt: true, id: true, image: true, name: true, verified: true } as const;
 
-	const session = await auth.api.getSession({ headers: await headers() });
 	const data = await database.query.post.findMany({
-		columns: { content: true, createdAt: true, id: true },
+		columns: { content: true, createdAt: true, id: true, userAgent: true },
 		with: {
 			author: { columns: authorColumns },
-			session: { columns: { userAgent: true } },
-			// likes: { columns: { id: true }, with: { author: { columns: authorColumns } } },
+			likes: { columns: { id: true }, with: { author: { columns: authorColumns } } },
 			originalPost: {
 				columns: { content: true, createdAt: true },
 				with: { author: { columns: authorColumns } },
@@ -36,13 +32,6 @@ export default async function getPosts({ pageParam: offset }: { pageParam: numbe
 			repostCount:
 				sql<number>`(SELECT cast(count(*) as int) FROM ${post} WHERE ${post.originalPostId} = ${post.id})`.as(
 					'repost_count',
-				),
-			likeCount: sql<number>`(SELECT cast(count(*) as int) FROM ${like} WHERE "like"."post_id" = ${post.id})`.as(
-				'like_count',
-			),
-			hasUserLiked:
-				sql<boolean>`(EXISTS (SELECT 1 FROM ${like} WHERE "like"."post_id" = ${post.id} AND "like"."user_id" = ${session?.user.id}))`.as(
-					'has_liked',
 				),
 		}),
 		// extras: (post) => ({
