@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import PostDropdown from './PostDropdown';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import { getOS } from '~/lib/getOS';
-import PostLike from './PostLike';
+import PostLike from './footer/PostLike';
 import type { auth } from '~/lib/auth/server';
 
 export default function Post({ post, userId }: { post: any; userId?: typeof auth.$Infer.Session.user.id }) {
@@ -17,7 +17,7 @@ export default function Post({ post, userId }: { post: any; userId?: typeof auth
 		return (
 			<Avatar className="size-12">
 				<AvatarImage
-					src={post.originalPost?.author.image || post.author.image || '/user.svg'}
+					src={post.originalPost?.author.image || post.author.image}
 					alt={`${post.originalPost?.author.name || post.author.name}'s Avatar`}
 				/>
 				<AvatarFallback>
@@ -33,7 +33,7 @@ export default function Post({ post, userId }: { post: any; userId?: typeof auth
 	function NameAndVerifiedBadge() {
 		return (
 			<>
-				<span>{post.originalPost?.author.name || post.author.name}</span>
+				<span className="truncate">{post.originalPost?.author.name || post.author.name}</span>
 				<Tooltip>
 					<TooltipTrigger>{post.author.verified && <BadgeCheck className="size-5 text-sky-500" />}</TooltipTrigger>
 					<TooltipContent side="right">
@@ -58,14 +58,14 @@ export default function Post({ post, userId }: { post: any; userId?: typeof auth
 								<h4 className="text-sm text-stone-600 dark:text-stone-400" suppressHydrationWarning>
 									{getRelativeTime(post.originalPost?.createdAt ?? post.createdAt)}
 								</h4>
-								<h5 className="text-muted-foreground w-full truncate text-xs">Post ID: {post.id}</h5>
+								<h5 className="text-muted-foreground w-full truncate text-xs">{post.id}</h5>
 							</div>
 						</div>
 					</HoverCardTrigger>
-					<HoverCardContent side="top" className="w-fit">
+					<HoverCardContent side="top" className="w-auto max-w-xs">
 						<div className="flex justify-between gap-4">
 							<ProfilePicture />
-							<div className="space-y-1">
+							<div className="min-w-0 space-y-1">
 								<div className="flex flex-col">
 									<div className="flex flex-row gap-x-2 text-lg font-semibold">
 										<NameAndVerifiedBadge />

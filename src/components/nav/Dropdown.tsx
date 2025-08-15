@@ -50,7 +50,7 @@ export default function Dropdown() {
 						'Loading...'
 					) : (
 						<div className="flex flex-col">
-							<span>{data?.user.name ?? 'Not Signed In'}</span>
+							<span className="truncate">{data?.user.name ?? 'Not Signed In'}</span>
 							{!!data && <span className="text-muted-foreground truncate text-xs">{data.user.id}</span>}
 						</div>
 					)}

@@ -4,7 +4,7 @@
 
 import { useMutation } from '@tanstack/react-query';
 import repost from './postRepost';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { Loader, Repeat2 } from 'lucide-react';
 
 export default function PostRepost({ repostCount }: { repostCount: number }) {

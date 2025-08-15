@@ -35,12 +35,10 @@ export default function SignUp() {
 	return (
 		<main className="flex w-full flex-1 items-center justify-center px-4 py-4">
 			<Form {...form}>
-				<form action={action}>
-					<div className="flex w-4/5 flex-col gap-6 sm:w-sm md:w-md">
+				<form action={action} className="flex justify-center">
+					<div className="flex w-5/6 flex-col gap-6 sm:w-sm md:w-md">
 						<div className="flex flex-col items-center gap-2">
-							<a href="#" className="flex flex-col items-center gap-2 font-medium">
-								<Image src={BirdSky} alt="BirdSky Favicon" width={32} height={32} />
-							</a>
+							<Image src={BirdSky} alt="BirdSky Favicon" width={32} height={32} />
 							<h1 className="text-xl font-bold">Sign Up to BirdSky</h1>
 							<div className="text-center text-sm">
 								Already have an account?{' '}

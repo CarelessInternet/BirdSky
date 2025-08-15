@@ -1,14 +1,14 @@
 'use client';
 
 import { Heart, Loader } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { useMutation } from '@tanstack/react-query';
 import { givePostLike } from './postLike';
 import type { like } from '~/lib/database/schema';
 import { getQueryClient } from '~/lib/query';
 import { useState } from 'react';
 import type { auth } from '~/lib/auth/server';
-import type { PostLikes } from './types';
+import type { PostLikes } from '../types';
 
 export default function PostLike({
 	id,
@@ -42,7 +42,7 @@ export default function PostLike({
 			size="lg"
 			className={'hover:text-rose-500' + (hasUserLiked ? ' text-red-500' : '')}
 			onClick={() => mutation.mutate(id)}
-			disabled={mutation.isPending}
+			disabled={!userId || mutation.isPending}
 		>
 			{mutation.isPending ? (
 				<Loader className="size-5 animate-spin" />

@@ -5,7 +5,7 @@ import { ClipboardCheck, Heart, MoreHorizontal, Share } from 'lucide-react';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { postLikes } from './postLike';
+import { postLikes } from './footer/postLike';
 import { useQuery } from '@tanstack/react-query';
 import type { post } from '~/lib/database/schema';
 import type { PostLikes } from './types';
@@ -58,7 +58,7 @@ export default function PostDropdown({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>wsehew</DialogTitle>
-					<DialogDescription>Likes: {likes?.map((like) => like.author.name)}</DialogDescription>
+					<DialogDescription>Likes: {likes?.map((like) => like.author.name).join(', ')}</DialogDescription>
 				</DialogHeader>
 			</DialogContent>
 		</Dialog>

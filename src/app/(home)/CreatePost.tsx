@@ -76,7 +76,10 @@ export default function CreatePost() {
 											<FormControl>
 												<MarkdownEditor textareaProps={{ ...field }} value={field.value} onChange={field.onChange} />
 											</FormControl>
-											<FormDescription>You can even attach images and create tables!</FormDescription>
+											<FormDescription>
+												You can even attach images and create tables! On small displays, toggle the edit mode to only
+												show your content.
+											</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}

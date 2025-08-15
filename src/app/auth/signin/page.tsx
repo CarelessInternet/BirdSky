@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import BirdSky from '../../../app/favicon.ico';
 import GitHub from '../../../../public/GitHub.svg';
 import GitHubWhite from '../../../../public/GitHub-White.svg';
 import { useActionState, useTransition } from 'react';
@@ -10,7 +11,6 @@ import { useForm } from 'react-hook-form';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
 import signInAction from './signIn';
 import { type Schema, schema } from './formOptions';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
@@ -35,9 +35,12 @@ export default function SignIn() {
 
 	return (
 		<main className="flex w-full flex-1 items-center justify-center px-4 py-4">
-			<div className="flex w-4/5 flex-col gap-6 sm:w-sm md:w-md">
+			<div className="flex w-5/6 flex-col gap-6 sm:w-sm md:w-md">
 				<Card>
 					<CardHeader className="text-center">
+						<div className="flex justify-center">
+							<Image src={BirdSky} alt="BirdSky Favicon" width={32} height={32} />
+						</div>
 						<CardTitle className="text-xl">Welcome back to BirdSky!</CardTitle>
 						<CardDescription>Login with your GitHub account</CardDescription>
 					</CardHeader>

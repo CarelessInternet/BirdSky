@@ -13,12 +13,10 @@ export default function Component() {
 	return (
 		<header className="bg-background sticky top-0 z-50 flex w-full justify-center border-b shadow-sm backdrop-blur">
 			<div className="container flex h-16 items-center justify-between px-4">
-				<div className="flex items-center space-x-2">
+				<NextLink href="/" className="text-foreground flex flex-row items-center space-x-2 text-xl font-bold">
 					<Image src={BirdSky} alt="BirdSky Favicon" width={32} height={32} />
-					<NextLink href="/" className="text-foreground text-xl font-bold">
-						BirdSky
-					</NextLink>
-				</div>
+					<span>BirdSky</span>
+				</NextLink>
 
 				<div className="hidden max-w-2xl flex-1 items-center justify-center space-x-6 md:flex">
 					<NavigationMenu>

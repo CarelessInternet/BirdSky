@@ -4,6 +4,7 @@ import { errors, rootError, type ActionState } from '~/lib/form';
 import { schema, type Schema } from './formOptions';
 import { auth } from '~/lib/auth/server';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export default async function signUp(_: ActionState<Schema>, formData: FormData): Promise<ActionState<Schema>> {
 	const fields = {
@@ -22,7 +23,7 @@ export default async function signUp(_: ActionState<Schema>, formData: FormData)
 	}
 
 	try {
-		await auth.api.signUpEmail({ body: { rememberMe: true, ...validation.data } });
+		await auth.api.signUpEmail({ body: { rememberMe: true, ...validation.data }, headers: await headers() });
 	} catch (error) {
 		return rootError({ error: (error as Error).message, values: validation.data });
 	}

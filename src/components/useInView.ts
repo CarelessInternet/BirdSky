@@ -11,9 +11,7 @@ export default function useInView<T extends HTMLElement>() {
 	const [inView, setInView] = useState(false);
 
 	useEffect(() => {
-		const signal = new AbortController();
 		const element = ref.current;
-
 		const observer = new IntersectionObserver(([entry]) => {
 			setInView(entry.isIntersecting);
 		});
@@ -23,8 +21,6 @@ export default function useInView<T extends HTMLElement>() {
 		}
 
 		return () => {
-			signal.abort();
-
 			if (element) {
 				observer.unobserve(element);
 			}

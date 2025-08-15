@@ -36,7 +36,7 @@ export async function givePostLike(postId: typeof like.$inferSelect.postId) {
 	if (authorLike) {
 		await database.delete(like).where(eq(like.id, authorLike.id));
 	} else {
-		await database.insert(like).values({ postId, sessionId: session.session.id, userId: session.user.id });
+		await database.insert(like).values({ postId, userId: session.user.id, userAgent: session.session.userAgent });
 	}
 
 	return database.$count(like, eq(like.postId, postId));

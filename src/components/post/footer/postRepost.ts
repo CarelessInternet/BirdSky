@@ -15,7 +15,7 @@ export default async function repost(originalPostId: typeof post.$inferSelect.id
 
 	await database
 		.insert(post)
-		.values({ sessionId: session.session.id, userId: session.user.id, originalPostId })
+		.values({ userId: session.user.id, originalPostId, userAgent: session.session.userAgent })
 		.onConflictDoUpdate({
 			set: { originalPostId: null },
 			target: post.originalPostId,
