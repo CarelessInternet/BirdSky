@@ -21,7 +21,7 @@ export async function postLikes(postId: typeof like.$inferSelect.postId) {
 	});
 }
 
-export async function givePostLike(postId: typeof like.$inferSelect.postId) {
+export async function postAction(postId: typeof like.$inferSelect.postId) {
 	const session = await auth.api.getSession({ headers: await headers() });
 
 	if (!session) {

@@ -1,8 +1,6 @@
 // todo (wip): show posts and functionality
 // todo: add a proper loading state for the page
 
-export const experimental_ppr = true;
-
 import { auth } from '~/lib/auth/server';
 import CreatePost from './CreatePost';
 import { headers } from 'next/headers';

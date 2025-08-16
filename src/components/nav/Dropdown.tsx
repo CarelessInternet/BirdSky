@@ -15,14 +15,13 @@ import {
 	DropdownMenuSubContent,
 } from '../ui/dropdown-menu';
 import { Button } from '../ui/button';
-import { signOut, useSession } from '~/lib/auth/client';
+import { type Session, signOut } from '~/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useTransition } from 'react';
 
-export default function Dropdown() {
-	const { data, isPending } = useSession();
+export default function Dropdown({ session }: { session: Session | null }) {
 	const router = useRouter();
 	const { setTheme } = useTheme();
 
@@ -33,9 +32,9 @@ export default function Dropdown() {
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" size="sm" className="hover:bg-accent/50 flex items-center space-x-1">
 					<Avatar className="mr-2 inline-block size-8 rounded-full">
-						<AvatarImage src={data?.user.image ?? undefined} alt={`${data?.user.name}'s Avatar`} />
+						<AvatarImage src={session?.user.image ?? undefined} alt={`${session?.user.name}'s Avatar`} />
 						<AvatarFallback>
-							{data?.user.name
+							{session?.user.name
 								.split(' ')
 								.map((n) => n[0])
 								.join('') || '?'}
@@ -46,19 +45,15 @@ export default function Dropdown() {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-56">
 				<DropdownMenuLabel>
-					{isPending ? (
-						'Loading...'
-					) : (
-						<div className="flex flex-col">
-							<span className="truncate">{data?.user.name ?? 'Not Signed In'}</span>
-							{!!data && <span className="text-muted-foreground truncate text-xs">{data.user.id}</span>}
-						</div>
-					)}
+					<div className="flex flex-col">
+						<span className="truncate">{session?.user.name ?? 'Not Signed In'}</span>
+						{session && <span className="text-muted-foreground truncate text-xs">{session.user.id}</span>}
+					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				{!isPending && data && (
+				{session && (
 					<DropdownMenuItem asChild>
-						<NextLink href={`/users/${data.user.id}`}>
+						<NextLink href={`/users/${session.user.id}`}>
 							<User className="mr-2 size-4" />
 							<span>Profile</span>
 						</NextLink>
@@ -88,10 +83,10 @@ export default function Dropdown() {
 				</DropdownMenuSub>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem
-					variant={data ? 'destructive' : 'default'}
+					variant={session ? 'destructive' : 'default'}
 					onClick={() =>
 						startTransition(async () => {
-							if (data) {
+							if (session) {
 								await signOut({ fetchOptions: { onSuccess: () => router.push('/') } });
 							} else {
 								router.push('/auth/signin');
@@ -100,8 +95,8 @@ export default function Dropdown() {
 					}
 					disabled={isTransitionPending}
 				>
-					{data ? <LogOut className="mr-2 size-4" /> : <LogIn className="mr-2 size-4" />}
-					<span>Sign {data ? 'out' : 'in'}</span>
+					{session ? <LogOut className="mr-2 size-4" /> : <LogIn className="mr-2 size-4" />}
+					<span>Sign {session ? 'out' : 'in'}</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

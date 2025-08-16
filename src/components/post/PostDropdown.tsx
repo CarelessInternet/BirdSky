@@ -38,7 +38,7 @@ export default function PostDropdown({
 							navigator.clipboard
 								.writeText(`${window.location.origin}/posts/${id}`)
 								.then(() => toast('URL copied to clipboard!', { dismissible: true, icon: <ClipboardCheck /> }))
-								.catch((error: unknown) => {
+								.catch((error) => {
 									console.error(error);
 									toast('Could not copy the URL to clipboard.', { dismissible: true });
 								});

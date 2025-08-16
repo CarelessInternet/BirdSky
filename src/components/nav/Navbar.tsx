@@ -8,8 +8,12 @@ import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
 import { Input } from '~/components/ui/input';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from '~/components/ui/navigation-menu';
 import Dropdown from './Dropdown';
+import { auth } from '~/lib/auth/server';
+import { headers } from 'next/headers';
 
-export default function Component() {
+export default async function Component() {
+	const session = await auth.api.getSession({ headers: await headers() });
+
 	return (
 		<header className="bg-background sticky top-0 z-50 flex w-full justify-center border-b shadow-sm backdrop-blur">
 			<div className="container flex h-16 items-center justify-between px-4">
@@ -36,7 +40,7 @@ export default function Component() {
 				</div>
 
 				<div className="flex items-center space-x-2">
-					<Dropdown />
+					<Dropdown session={session} />
 
 					<Sheet>
 						<SheetTrigger asChild>

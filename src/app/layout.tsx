@@ -11,6 +11,8 @@ const font = DM_Sans({
 	subsets: ['latin'],
 });
 
+export const experimental_ppr = true;
+
 export const metadata: Metadata = {
 	title: 'BirdSky',
 	description: 'High in the sky, the birds fly freely.',

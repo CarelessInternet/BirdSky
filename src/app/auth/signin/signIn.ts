@@ -8,16 +8,16 @@ import { headers } from 'next/headers';
 
 export default async function signIn(_: ActionState<Schema>, formData: FormData): Promise<ActionState<Schema>> {
 	const fields = {
-		email: formData.get('email') || '',
-		password: formData.get('password') || '',
-	};
+		email: formData.get('email')?.toString() || '',
+		password: formData.get('password')?.toString() || '',
+	} satisfies Schema;
 	const validation = schema.safeParse(fields);
 
 	if (!validation.success) {
 		return {
 			success: validation.success,
 			errors: errors(validation.error),
-			values: { email: fields.email.toString(), password: fields.password.toString() },
+			values: fields,
 		};
 	}
 

@@ -8,22 +8,26 @@ import { headers } from 'next/headers';
 
 export default async function signUp(_: ActionState<Schema>, formData: FormData): Promise<ActionState<Schema>> {
 	const fields = {
-		name: formData.get('name') || '',
-		email: formData.get('email') || '',
-		password: formData.get('password') || '',
-	};
+		name: formData.get('name')?.toString() || '',
+		email: formData.get('email')?.toString() || '',
+		password: formData.get('password')?.toString() || '',
+		image: formData.get('image')?.toString() || null,
+	} satisfies Schema;
 	const validation = schema.safeParse(fields);
 
 	if (!validation.success) {
 		return {
 			success: validation.success,
 			errors: errors(validation.error),
-			values: { name: fields.name.toString(), email: fields.email.toString(), password: fields.password.toString() },
+			values: fields,
 		};
 	}
 
 	try {
-		await auth.api.signUpEmail({ body: { rememberMe: true, ...validation.data }, headers: await headers() });
+		await auth.api.signUpEmail({
+			body: { rememberMe: true, ...validation.data, image: validation.data.image || undefined },
+			headers: await headers(),
+		});
 	} catch (error) {
 		return rootError({ error: (error as Error).message, values: validation.data });
 	}

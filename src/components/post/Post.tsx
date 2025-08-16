@@ -1,29 +1,32 @@
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
-import { BadgeCheck, MessageCircle, Repeat2 } from 'lucide-react';
+import { BadgeCheck, MessageCircle } from 'lucide-react';
 import { getMonthAndYear, getRelativeTime } from '~/lib/date';
 import { Card, CardHeader, CardContent, CardFooter } from '../ui/card';
 import { Separator } from '../ui/separator';
-import { MarkdownView } from '../Markdown';
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import PostDropdown from './PostDropdown';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import { getOS } from '~/lib/getOS';
 import PostLike from './footer/PostLike';
-import type { auth } from '~/lib/auth/server';
+// todo: don't rely on fetchPosts type
+import type { PostData } from '~/app/(home)/fetchPosts';
+import PostRepost from './footer/PostRepost';
+import type { Session } from '~/lib/auth/client';
+import PostContent from './PostContent';
 
-export default function Post({ post, userId }: { post: any; userId?: typeof auth.$Infer.Session.user.id }) {
+export default function Post({ post, userId }: { post: PostData; userId?: Session['user']['id'] }) {
 	function ProfilePicture() {
 		return (
 			<Avatar className="size-12">
 				<AvatarImage
-					src={post.originalPost?.author.image || post.author.image}
+					src={post.originalPost?.author.image || post.author.image || undefined}
 					alt={`${post.originalPost?.author.name || post.author.name}'s Avatar`}
 				/>
 				<AvatarFallback>
 					{post.author.name
 						.split(' ')
-						.map((n: string[]) => n[0])
+						.map((n) => n.at(0))
 						.join('')}
 				</AvatarFallback>
 			</Avatar>
@@ -70,8 +73,8 @@ export default function Post({ post, userId }: { post: any; userId?: typeof auth
 									<div className="flex flex-row gap-x-2 text-lg font-semibold">
 										<NameAndVerifiedBadge />
 									</div>
-									<span className="text-muted-foreground text-xs">{post.author.id}</span>
-									<span className="text-muted-foreground text-xs">BirdSky for {getOS(post.userAgent)}</span>
+									<span className="text-muted-foreground truncate text-xs">{post.author.id}</span>
+									<span className="text-muted-foreground text-xs">BirdSky for {getOS(post?.userAgent)}</span>
 								</div>
 								<p className="text-sm">Joined {getMonthAndYear(post.author.createdAt)}</p>
 							</div>
@@ -84,7 +87,7 @@ export default function Post({ post, userId }: { post: any; userId?: typeof auth
 			<div>
 				<Separator orientation="horizontal" />
 				<CardContent className="my-6">
-					<MarkdownView source={post.originalPost?.content ?? post.content ?? ''} />
+					<PostContent content={post.originalPost?.content ?? post.content ?? ''} />
 				</CardContent>
 				<Separator orientation="horizontal" />
 			</div>
@@ -94,11 +97,7 @@ export default function Post({ post, userId }: { post: any; userId?: typeof auth
 					<MessageCircle className="size-5" />
 					{post.replyCount}
 				</Button>
-				{/* text-cyan-500 */}
-				<Button variant="ghost" size="lg" className="hover:text-sky-500">
-					<Repeat2 className="size-5" />
-					{post.repostCount}
-				</Button>
+				<PostRepost reposts={post.reposts} id={post.id} userId={userId} />
 				<PostLike likes={post.likes} id={post.id} userId={userId} />
 			</CardFooter>
 		</Card>

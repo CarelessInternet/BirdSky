@@ -6,7 +6,7 @@ import { auth } from '~/lib/auth/server';
 import { database } from '~/lib/database/connection';
 import { post } from '~/lib/database/schema';
 
-export default async function repost(originalPostId: typeof post.$inferSelect.id) {
+export async function repostAction(originalPostId: typeof post.$inferSelect.id) {
 	const session = await auth.api.getSession({ headers: await headers() });
 
 	if (!session) {

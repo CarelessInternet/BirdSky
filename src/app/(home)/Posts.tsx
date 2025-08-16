@@ -9,10 +9,10 @@ import { Card, CardContent } from '~/components/ui/card';
 import { ArrowDown, FileText, LogIn } from 'lucide-react';
 import CreatePost from './CreatePost';
 import { Button } from '~/components/ui/button';
-import { auth } from '~/lib/auth/server';
 import Link from 'next/link';
+import type { Session } from '~/lib/auth/client';
 
-export default function Posts({ userId }: { userId?: typeof auth.$Infer.Session.user.id }) {
+export default function Posts({ userId }: { userId?: Session['user']['id'] }) {
 	const { data, fetchNextPage } = useSuspenseInfiniteQuery(fetchPostsOptions);
 	const { inView, ref } = useInView<HTMLInputElement>();
 

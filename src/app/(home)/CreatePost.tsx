@@ -38,7 +38,7 @@ export default function CreatePost() {
 		if (state.success) {
 			setOpen(false);
 		}
-	}, [state.success]);
+	}, [state]);
 
 	// Overflow is hidden when closing the dialog.
 	// https://github.com/shadcn-ui/ui/issues/6988

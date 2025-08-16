@@ -75,7 +75,7 @@ export default function SignIn() {
 													<FormItem>
 														<FormLabel>E-mail</FormLabel>
 														<FormControl>
-															<Input placeholder="email@example.com" {...field} />
+															<Input type="email" placeholder="email@example.com" {...field} />
 														</FormControl>
 														<FormMessage />
 													</FormItem>

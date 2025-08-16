@@ -3,12 +3,12 @@
 import { Heart, Loader } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { useMutation } from '@tanstack/react-query';
-import { givePostLike } from './postLike';
+import { postAction } from './postLike';
 import type { like } from '~/lib/database/schema';
 import { getQueryClient } from '~/lib/query';
 import { useState } from 'react';
-import type { auth } from '~/lib/auth/server';
 import type { PostLikes } from '../types';
+import { Session } from '~/lib/auth/client';
 
 export default function PostLike({
 	id,
@@ -17,7 +17,7 @@ export default function PostLike({
 }: {
 	id: typeof like.$inferSelect.postId;
 	likes: PostLikes;
-	userId?: typeof auth.$Infer.Session.user.id;
+	userId?: Session['user']['id'];
 }) {
 	const [hasUserLiked, setHasUserLiked] = useState(serverLikes.some((like) => like.author.id === userId));
 	const [likes, setLikes] = useState(serverLikes.length);
@@ -29,7 +29,7 @@ export default function PostLike({
 
 	const queryClient = getQueryClient();
 	const mutation = useMutation({
-		mutationFn: givePostLike,
+		mutationFn: postAction,
 		onMutate: toggleLike,
 		onSuccess: (newLikes) => setLikes(newLikes),
 		onError: toggleLike,

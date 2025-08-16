@@ -4,7 +4,7 @@ import { database } from '~/lib/database/connection';
 import { post, reply } from '~/lib/database/schema';
 import type { InfiniteQueryResult } from '~/lib/query';
 
-export default async function getPosts({ pageParam: offset }: { pageParam: number }) {
+export default async function fetchPosts({ pageParam: offset }: { pageParam: number }) {
 	const PAGE_LIMIT = 5;
 	const authorColumns = { createdAt: true, id: true, image: true, name: true, verified: true } as const;
 
@@ -17,7 +17,10 @@ export default async function getPosts({ pageParam: offset }: { pageParam: numbe
 				columns: { content: true, createdAt: true },
 				with: { author: { columns: authorColumns } },
 			},
-			// reposts: { with: { author: { columns: { id: true, image: true, name: true } } } },
+			reposts: {
+				columns: { id: true },
+				with: { author: { columns: { id: true, image: true, name: true, verified: true } } },
+			},
 		},
 		// _post is bugged when trying to select from that table.
 		extras: (_post, { sql }) => ({
@@ -50,3 +53,5 @@ export default async function getPosts({ pageParam: offset }: { pageParam: numbe
 		nextCursor: data.length === PAGE_LIMIT ? offset + PAGE_LIMIT : null,
 	} satisfies InfiniteQueryResult<typeof data>;
 }
+
+export type PostData = Awaited<ReturnType<typeof fetchPosts>>['data'][number];

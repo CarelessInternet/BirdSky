@@ -20,7 +20,7 @@ export default function SignUp() {
 	const [state, action, isPending] = useActionState(signUp, {
 		success: false,
 		errors: {},
-		values: { name: '', email: '', password: '' },
+		values: { name: '', email: '', password: '', image: null },
 	});
 	const form = useForm<Schema>({
 		mode: 'onTouched',
@@ -71,7 +71,7 @@ export default function SignUp() {
 										<FormItem>
 											<FormLabel>E-mail</FormLabel>
 											<FormControl>
-												<Input placeholder="email@example.com" {...field} />
+												<Input type="email" placeholder="email@example.com" {...field} />
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -87,6 +87,21 @@ export default function SignUp() {
 											<FormLabel>Password</FormLabel>
 											<FormControl>
 												<Input type="password" {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							</div>
+							<div className="grid gap-3">
+								<FormField
+									control={form.control}
+									name="image"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Image URL</FormLabel>
+											<FormControl>
+												<Input type="url" {...field} value={field.value || ''} />
 											</FormControl>
 											<FormMessage />
 										</FormItem>

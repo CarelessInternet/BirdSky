@@ -37,7 +37,9 @@ function isChromeOS(userAgent: string): boolean {
 	return chromePattern.test(userAgent);
 }
 
-export function getOS(userAgent: Navigator['userAgent']): UseOSReturnValue {
+export function getOS(userAgent?: Navigator['userAgent'] | null): UseOSReturnValue {
+	userAgent ??= '';
+
 	if (isIOS(userAgent) || (isMacOS(userAgent) && 'ontouchend' in document)) {
 		return 'iOS';
 	}
