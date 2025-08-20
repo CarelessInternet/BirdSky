@@ -42,7 +42,7 @@ export default function SignIn() {
 							<Image src={BirdSky} alt="BirdSky Favicon" width={32} height={32} />
 						</div>
 						<CardTitle className="text-xl">Welcome back to BirdSky!</CardTitle>
-						<CardDescription>Login with your GitHub account</CardDescription>
+						<CardDescription>Login through one of the following:</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<Form {...form}>

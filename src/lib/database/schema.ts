@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { pgTable, text, timestamp, boolean, index, foreignKey, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, index, foreignKey, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
@@ -68,7 +68,7 @@ export const post = pgTable(
 		userAgent: text('user_agent'),
 		content: text('content'),
 		// Reposts.
-		originalPostId: uuid('original_post_id'),
+		originalPostId: uuid('original_post_id').references((): AnyPgColumn => post.id, { onDelete: 'cascade' }),
 		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [
@@ -134,7 +134,7 @@ export const reply = pgTable(
 			.notNull()
 			.references(() => post.id, { onDelete: 'cascade' }),
 		// Nested replies.
-		parentReplyId: uuid('parent_reply_id'),
+		parentReplyId: uuid('parent_reply_id').references((): AnyPgColumn => reply.id, { onDelete: 'cascade' }),
 		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [

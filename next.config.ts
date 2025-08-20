@@ -1,10 +1,10 @@
 import type { NextConfig } from 'next';
 
 export default {
+	typedRoutes: true,
 	experimental: {
 		reactCompiler: true,
 		ppr: 'incremental',
-		typedRoutes: true,
 	},
 	images: {
 		unoptimized: true,

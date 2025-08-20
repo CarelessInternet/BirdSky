@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
-import { BadgeCheck, MessageCircle } from 'lucide-react';
+import { BadgeCheck, MessageCircle, MessageSquareQuote } from 'lucide-react';
 import { getMonthAndYear, getRelativeTime } from '~/lib/date';
 import { Card, CardHeader, CardContent, CardFooter } from '../ui/card';
 import { Separator } from '../ui/separator';
@@ -50,38 +50,48 @@ export default function Post({ post, userId }: { post: PostData; userId?: Sessio
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between">
-				<HoverCard>
-					<HoverCardTrigger asChild>
-						<div className="flex min-w-0 flex-row items-center gap-x-3">
-							<ProfilePicture />
-							<div className="flex min-w-0 flex-col">
-								<div className="flex flex-row gap-x-2 text-xl leading-none">
-									<NameAndVerifiedBadge />
-								</div>
-								<h4 className="text-sm text-stone-600 dark:text-stone-400" suppressHydrationWarning>
-									{getRelativeTime(post.originalPost?.createdAt ?? post.createdAt)}
-								</h4>
-								<h5 className="text-muted-foreground w-full truncate text-xs">{post.id}</h5>
-							</div>
+				<div className="flex flex-col">
+					{post.originalPost && (
+						<div className="mb-2 flex flex-row items-center gap-1.5">
+							<MessageSquareQuote className="size-4" />
+							<span className="text-sm text-stone-500 dark:text-stone-300" suppressHydrationWarning>
+								{post.author.name} reposted {getRelativeTime(post.createdAt)}:
+							</span>
 						</div>
-					</HoverCardTrigger>
-					<HoverCardContent side="top" className="w-auto max-w-xs">
-						<div className="flex justify-between gap-4">
-							<ProfilePicture />
-							<div className="min-w-0 space-y-1">
-								<div className="flex flex-col">
-									<div className="flex flex-row gap-x-2 text-lg font-semibold">
+					)}
+					<HoverCard>
+						<HoverCardTrigger asChild>
+							<div className="flex min-w-0 flex-row items-center gap-x-3">
+								<ProfilePicture />
+								<div className="flex min-w-0 flex-col">
+									<div className="flex flex-row gap-x-2 text-xl leading-none">
 										<NameAndVerifiedBadge />
 									</div>
-									<span className="text-muted-foreground truncate text-xs">{post.author.id}</span>
-									<span className="text-muted-foreground text-xs">BirdSky for {getOS(post?.userAgent)}</span>
+									<h4 className="text-sm text-stone-600 dark:text-stone-400" suppressHydrationWarning>
+										{getRelativeTime(post.originalPost?.createdAt ?? post.createdAt)}
+									</h4>
+									<h5 className="text-muted-foreground w-full truncate text-xs">{post.id}</h5>
 								</div>
-								<p className="text-sm">Joined {getMonthAndYear(post.author.createdAt)}</p>
 							</div>
-						</div>
-					</HoverCardContent>
-				</HoverCard>
-				<PostDropdown id={post.id} initialLikes={post.likes} />
+						</HoverCardTrigger>
+						<HoverCardContent side="top" className="w-auto max-w-xs">
+							<div className="flex justify-between gap-4">
+								<ProfilePicture />
+								<div className="min-w-0 space-y-1">
+									<div className="flex flex-col">
+										<div className="flex flex-row gap-x-2 text-lg font-semibold">
+											<NameAndVerifiedBadge />
+										</div>
+										<span className="text-muted-foreground truncate text-xs">{post.author.id}</span>
+										<span className="text-muted-foreground text-xs">BirdSky for {getOS(post?.userAgent)}</span>
+									</div>
+									<p className="text-sm">Joined {getMonthAndYear(post.author.createdAt)}</p>
+								</div>
+							</div>
+						</HoverCardContent>
+					</HoverCard>
+				</div>
+				<PostDropdown id={post.id} initialLikes={post.likes} initialReposts={post.reposts} />
 			</CardHeader>
 			{/* This allows screenshotting only the content: */}
 			<div>
@@ -97,8 +107,8 @@ export default function Post({ post, userId }: { post: PostData; userId?: Sessio
 					<MessageCircle className="size-5" />
 					{post.replyCount}
 				</Button>
-				<PostRepost reposts={post.reposts} id={post.id} userId={userId} />
-				<PostLike likes={post.likes} id={post.id} userId={userId} />
+				<PostRepost id={post.id} isRepost={!!post.originalPost} reposts={post.reposts} userId={userId} />
+				<PostLike id={post.id} likes={post.likes} userId={userId} />
 			</CardFooter>
 		</Card>
 	);

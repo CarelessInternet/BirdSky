@@ -40,4 +40,9 @@ export const auth = betterAuth({
 			maxAge: 1 * 60 * 60,
 		},
 	},
+	account: {
+		accountLinking: {
+			enabled: true,
+		},
+	},
 });
