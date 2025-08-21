@@ -1,5 +1,5 @@
-// todo (wip): show posts and functionality
-// todo: add a proper loading state for the page
+// todo (wip): show posts and functionality.
+// todo: add a proper loading state for the page.
 
 import { auth } from '~/lib/auth/server';
 import CreatePost from './CreatePost';

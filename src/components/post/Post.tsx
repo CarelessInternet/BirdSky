@@ -9,87 +9,93 @@ import PostDropdown from './PostDropdown';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import { getOS } from '~/lib/getOS';
 import PostLike from './footer/PostLike';
-// todo: don't rely on fetchPosts type
+// todo: don't rely on fetchPosts type.
 import type { PostData } from '~/app/(home)/fetchPosts';
 import PostRepost from './footer/PostRepost';
 import type { Session } from '~/lib/auth/client';
 import PostContent from './PostContent';
+import type { PropsWithChildren } from 'react';
+
+function ProfilePicture({ author }: { author: PostData['author'] }) {
+	return (
+		<Avatar className="size-12">
+			<AvatarImage src={author.image || undefined} alt={`${author.name}'s Avatar`} />
+			<AvatarFallback>
+				{author.name
+					.split(' ')
+					.map((n) => n.at(0))
+					.join('')}
+			</AvatarFallback>
+		</Avatar>
+	);
+}
+
+function NameAndVerifiedBadge({ author }: { author: PostData['author'] }) {
+	return (
+		<>
+			<span className="truncate">{author.name}</span>
+			<Tooltip>
+				<TooltipTrigger>{author.verified && <BadgeCheck className="size-5 text-sky-500" />}</TooltipTrigger>
+				<TooltipContent side="right">
+					<p>Verified Account</p>
+				</TooltipContent>
+			</Tooltip>
+		</>
+	);
+}
+
+function UserHoverCard({ author, children, userAgent }: PropsWithChildren<Pick<PostData, 'author' | 'userAgent'>>) {
+	return (
+		<HoverCard>
+			<HoverCardTrigger asChild>{children}</HoverCardTrigger>
+			<HoverCardContent side="top" className="w-auto max-w-xs">
+				<div className="flex justify-between gap-4">
+					<ProfilePicture author={author} />
+					<div className="min-w-0 space-y-1">
+						<div className="flex flex-col">
+							<div className="flex flex-row gap-x-2 text-lg font-semibold">
+								<NameAndVerifiedBadge author={author} />
+							</div>
+							<span className="text-muted-foreground truncate text-xs">{author.id}</span>
+							<span className="text-muted-foreground text-xs">BirdSky for {getOS(userAgent)}</span>
+						</div>
+						<p className="text-sm">Joined {getMonthAndYear(author.createdAt)}</p>
+					</div>
+				</div>
+			</HoverCardContent>
+		</HoverCard>
+	);
+}
 
 export default function Post({ post, userId }: { post: PostData; userId?: Session['user']['id'] }) {
-	function ProfilePicture() {
-		return (
-			<Avatar className="size-12">
-				<AvatarImage
-					src={post.originalPost?.author.image || post.author.image || undefined}
-					alt={`${post.originalPost?.author.name || post.author.name}'s Avatar`}
-				/>
-				<AvatarFallback>
-					{post.author.name
-						.split(' ')
-						.map((n) => n.at(0))
-						.join('')}
-				</AvatarFallback>
-			</Avatar>
-		);
-	}
-
-	function NameAndVerifiedBadge() {
-		return (
-			<>
-				<span className="truncate">{post.originalPost?.author.name || post.author.name}</span>
-				<Tooltip>
-					<TooltipTrigger>{post.author.verified && <BadgeCheck className="size-5 text-sky-500" />}</TooltipTrigger>
-					<TooltipContent side="right">
-						<p>Verified Account</p>
-					</TooltipContent>
-				</Tooltip>
-			</>
-		);
-	}
+	// TODO: display quote content properly.
 
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between">
-				<div className="flex flex-col">
+				<div className="flex min-w-0 flex-col">
 					{post.originalPost && (
-						<div className="mb-2 flex flex-row items-center gap-1.5">
+						<div className="mb-3 flex flex-row items-center gap-1.5">
 							<MessageSquareQuote className="size-4" />
 							<span className="text-sm text-stone-500 dark:text-stone-300" suppressHydrationWarning>
-								{post.author.name} reposted {getRelativeTime(post.createdAt)}:
+								{post.author.name} reposted {getRelativeTime(post.createdAt)}: {post.content}
 							</span>
 						</div>
 					)}
-					<HoverCard>
-						<HoverCardTrigger asChild>
-							<div className="flex min-w-0 flex-row items-center gap-x-3">
-								<ProfilePicture />
-								<div className="flex min-w-0 flex-col">
-									<div className="flex flex-row gap-x-2 text-xl leading-none">
-										<NameAndVerifiedBadge />
-									</div>
-									<h4 className="text-sm text-stone-600 dark:text-stone-400" suppressHydrationWarning>
-										{getRelativeTime(post.originalPost?.createdAt ?? post.createdAt)}
-									</h4>
-									<h5 className="text-muted-foreground w-full truncate text-xs">{post.id}</h5>
+					<UserHoverCard author={post.originalPost?.author ?? post.author} userAgent={post.userAgent}>
+						<div className="flex min-w-0 flex-row items-center gap-x-3">
+							<ProfilePicture author={post.originalPost?.author ?? post.author} />
+							<div className="flex min-w-0 flex-col">
+								<div className="flex flex-row gap-x-2 text-xl leading-none">
+									<NameAndVerifiedBadge author={post.originalPost?.author ?? post.author} />
 								</div>
+								<h4 className="text-sm text-stone-600 dark:text-stone-400" suppressHydrationWarning>
+									{getRelativeTime(post.originalPost?.createdAt ?? post.createdAt)}
+								</h4>
+								<h5 className="text-muted-foreground w-full truncate text-xs">{post.id}</h5>
 							</div>
-						</HoverCardTrigger>
-						<HoverCardContent side="top" className="w-auto max-w-xs">
-							<div className="flex justify-between gap-4">
-								<ProfilePicture />
-								<div className="min-w-0 space-y-1">
-									<div className="flex flex-col">
-										<div className="flex flex-row gap-x-2 text-lg font-semibold">
-											<NameAndVerifiedBadge />
-										</div>
-										<span className="text-muted-foreground truncate text-xs">{post.author.id}</span>
-										<span className="text-muted-foreground text-xs">BirdSky for {getOS(post?.userAgent)}</span>
-									</div>
-									<p className="text-sm">Joined {getMonthAndYear(post.author.createdAt)}</p>
-								</div>
-							</div>
-						</HoverCardContent>
-					</HoverCard>
+						</div>
+					</UserHoverCard>
 				</div>
 				<PostDropdown id={post.id} initialLikes={post.likes} initialReposts={post.reposts} />
 			</CardHeader>

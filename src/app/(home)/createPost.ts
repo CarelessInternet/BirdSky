@@ -35,6 +35,5 @@ export default async function createPost(_: ActionState<Schema>, formData: FormD
 	}
 
 	revalidatePath('/');
-
 	return { success: true, values: validation.data };
 }
