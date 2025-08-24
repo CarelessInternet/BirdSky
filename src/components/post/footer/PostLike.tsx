@@ -9,6 +9,7 @@ import { getQueryClient } from '~/lib/query';
 import { useState } from 'react';
 import type { PostLikes } from '../types';
 import { Session } from '~/lib/auth/client';
+import { cn } from '~/lib/utils';
 
 export default function PostLike({
 	id,
@@ -40,14 +41,14 @@ export default function PostLike({
 		<Button
 			variant="ghost"
 			size="lg"
-			className={'hover:text-rose-500' + (hasUserLiked ? ' text-red-500' : '')}
+			className={cn('hover:text-rose-500', hasUserLiked && 'text-red-500')}
 			onClick={() => mutation.mutate(id)}
 			disabled={!userId || mutation.isPending}
 		>
 			{mutation.isPending ? (
 				<Loader className="size-5 animate-spin" />
 			) : (
-				<Heart className={'size-5' + (hasUserLiked ? ' fill-red-500' : '')} />
+				<Heart className={cn('size-5', hasUserLiked && 'fill-red-500')} />
 			)}
 			{likes}
 		</Button>

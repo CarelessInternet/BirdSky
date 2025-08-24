@@ -15,6 +15,7 @@ import PostRepost from './footer/PostRepost';
 import type { Session } from '~/lib/auth/client';
 import PostContent from './PostContent';
 import type { PropsWithChildren } from 'react';
+import { cn } from '~/lib/utils';
 
 function ProfilePicture({ author }: { author: PostData['author'] }) {
 	return (
@@ -30,16 +31,21 @@ function ProfilePicture({ author }: { author: PostData['author'] }) {
 	);
 }
 
-function NameAndVerifiedBadge({ author }: { author: PostData['author'] }) {
+function NameAndVerifiedBadge({ author, truncate = true }: { author: PostData['author']; truncate?: boolean }) {
 	return (
 		<>
-			<span className="truncate">{author.name}</span>
-			<Tooltip>
-				<TooltipTrigger>{author.verified && <BadgeCheck className="size-5 text-sky-500" />}</TooltipTrigger>
-				<TooltipContent side="right">
-					<p>Verified Account</p>
-				</TooltipContent>
-			</Tooltip>
+			{/* <span {...(truncate && { className: 'truncate' })}>{author.name}</span> */}
+			<span className={cn('min-w-0 wrap-anywhere', truncate && 'truncate')}>{author.name}</span>
+			{author.verified && (
+				<Tooltip>
+					<TooltipTrigger>
+						<BadgeCheck className="size-5 text-sky-500" />
+					</TooltipTrigger>
+					<TooltipContent side="right">
+						<p>Verified Account</p>
+					</TooltipContent>
+				</Tooltip>
+			)}
 		</>
 	);
 }
@@ -48,7 +54,7 @@ function UserHoverCard({ author, children, userAgent }: PropsWithChildren<Pick<P
 	return (
 		<HoverCard>
 			<HoverCardTrigger asChild>{children}</HoverCardTrigger>
-			<HoverCardContent side="top" className="w-auto max-w-xs">
+			<HoverCardContent side="top" className="xs:max-w-sm w-auto max-w-xs">
 				<div className="flex justify-between gap-4">
 					<ProfilePicture author={author} />
 					<div className="min-w-0 space-y-1">
@@ -67,55 +73,150 @@ function UserHoverCard({ author, children, userAgent }: PropsWithChildren<Pick<P
 	);
 }
 
-export default function Post({ post, userId }: { post: PostData; userId?: Session['user']['id'] }) {
-	// TODO: display quote content properly.
+export default function Post({
+	post,
+	userId,
+	isRepost = false,
+}: {
+	post: PostData;
+	userId?: Session['user']['id'];
+	isRepost?: boolean;
+}) {
+	if (post.originalPost) {
+		// Remove originalPost but rewrite the post data from the repost to the original post.
+		const repostedPost = { ...post, ...post.originalPost, originalPost: null } satisfies PostData;
+
+		return (
+			<Card>
+				<CardHeader className="flex min-w-0 flex-col">
+					{!post.content && (
+						<UserHoverCard author={post.author} userAgent={post.userAgent}>
+							<div className="flex flex-col gap-y-1">
+								<div className="flex min-w-0 flex-row items-start gap-1.5">
+									<MessageSquareQuote className="mt-1 size-4 shrink-0 self-start" />
+									<span className="flex min-w-0 flex-col">
+										<span
+											className={cn(
+												'min-w-0 flex-1 text-sm wrap-anywhere hyphens-auto text-stone-500 dark:text-stone-300',
+											)}
+										>
+											<span className="inline-flex min-w-0 items-center gap-x-1">
+												<NameAndVerifiedBadge author={post.author} truncate={false} />
+											</span>
+											<span suppressHydrationWarning> reposted {getRelativeTime(post.createdAt)}</span>
+										</span>
+										<span className="text-muted-foreground truncate text-xs">{post.id}</span>
+									</span>
+								</div>
+							</div>
+						</UserHoverCard>
+					)}
+					<div className="flex w-full flex-row items-center justify-between">
+						<UserHoverCard
+							author={post.content ? post.author : post.originalPost.author}
+							userAgent={post.content ? post.userAgent : post.originalPost.userAgent}
+						>
+							<div className="flex min-w-0 flex-row items-center gap-x-3">
+								<ProfilePicture author={post.content ? post.author : post.originalPost.author} />
+								<div className="flex min-w-0 flex-col">
+									<div className="flex flex-row gap-x-2 text-xl leading-none">
+										<NameAndVerifiedBadge author={post.content ? post.author : post.originalPost.author} />
+									</div>
+									<h4 className="text-sm text-stone-600 dark:text-stone-400" suppressHydrationWarning>
+										{getRelativeTime(post.content ? post.createdAt : post.originalPost.createdAt)}
+									</h4>
+									<h5 className="text-muted-foreground w-full truncate text-xs">
+										{post.content ? post.id : post.originalPost.id}
+									</h5>
+								</div>
+							</div>
+						</UserHoverCard>
+						<PostDropdown id={post.id} initialLikes={post.likes} initialReposts={post.reposts} />
+					</div>
+				</CardHeader>
+				{/* This allows screenshotting only the content: */}
+				<div>
+					<Separator orientation="horizontal" />
+					<CardContent className="my-6">
+						{post.content ? (
+							<>
+								<PostContent content={post.content} />
+								<div className="mt-6">
+									<Post post={repostedPost} userId={userId} isRepost />
+								</div>
+							</>
+						) : (
+							<PostContent content={post.originalPost.content ?? ''} />
+						)}
+					</CardContent>
+					<Separator orientation="horizontal" />
+				</div>
+				<CardFooter className="flex items-center justify-between">
+					{/* text-emerald-500 */}
+					<Button variant="ghost" size="lg" className="hover:text-green-500">
+						<MessageCircle className="size-5" />
+						{post.replyCount}
+					</Button>
+					<PostRepost id={post.id} isRepost reposts={post.reposts} userId={userId} />
+					<PostLike id={post.id} likes={post.likes} userId={userId} />
+				</CardFooter>
+			</Card>
+		);
+	}
 
 	return (
 		<Card>
-			<CardHeader className="flex flex-row items-center justify-between">
-				<div className="flex min-w-0 flex-col">
-					{post.originalPost && (
-						<div className="mb-3 flex flex-row items-center gap-1.5">
-							<MessageSquareQuote className="size-4" />
-							<span className="text-sm text-stone-500 dark:text-stone-300" suppressHydrationWarning>
-								{post.author.name} reposted {getRelativeTime(post.createdAt)}: {post.content}
+			<CardHeader className="flex min-w-0 flex-col">
+				{post.originalPost && !post.content && (
+					<UserHoverCard author={post.author} userAgent={post.userAgent}>
+						<div className="mb-3 flex min-w-0 flex-row items-center gap-1.5">
+							<MessageSquareQuote className="size-4 shrink-0" />
+							<span
+								className="min-w-0 flex-1 text-sm wrap-anywhere hyphens-auto text-stone-500 dark:text-stone-300"
+								suppressHydrationWarning
+							>
+								{post.author.name} reposted {getRelativeTime(post.createdAt)}
 							</span>
 						</div>
-					)}
-					<UserHoverCard author={post.originalPost?.author ?? post.author} userAgent={post.userAgent}>
+					</UserHoverCard>
+				)}
+				<div className="flex w-full flex-row items-center justify-between">
+					<UserHoverCard author={post.author} userAgent={post.userAgent}>
 						<div className="flex min-w-0 flex-row items-center gap-x-3">
-							<ProfilePicture author={post.originalPost?.author ?? post.author} />
+							<ProfilePicture author={post.author} />
 							<div className="flex min-w-0 flex-col">
 								<div className="flex flex-row gap-x-2 text-xl leading-none">
-									<NameAndVerifiedBadge author={post.originalPost?.author ?? post.author} />
+									<NameAndVerifiedBadge author={post.author} />
 								</div>
 								<h4 className="text-sm text-stone-600 dark:text-stone-400" suppressHydrationWarning>
-									{getRelativeTime(post.originalPost?.createdAt ?? post.createdAt)}
+									{getRelativeTime(post.createdAt)}
 								</h4>
 								<h5 className="text-muted-foreground w-full truncate text-xs">{post.id}</h5>
 							</div>
 						</div>
 					</UserHoverCard>
+					{!isRepost && <PostDropdown id={post.id} initialLikes={post.likes} initialReposts={post.reposts} />}
 				</div>
-				<PostDropdown id={post.id} initialLikes={post.likes} initialReposts={post.reposts} />
 			</CardHeader>
 			{/* This allows screenshotting only the content: */}
 			<div>
 				<Separator orientation="horizontal" />
-				<CardContent className="my-6">
-					<PostContent content={post.originalPost?.content ?? post.content ?? ''} />
+				<CardContent className={isRepost ? 'mt-6' : 'my-6'}>
+					<PostContent content={post.content ?? ''} />
 				</CardContent>
-				<Separator orientation="horizontal" />
+				{!isRepost && <Separator orientation="horizontal" />}
 			</div>
-			<CardFooter className="flex items-center justify-between">
-				{/* text-emerald-500 */}
-				<Button variant="ghost" size="lg" className="hover:text-green-500">
-					<MessageCircle className="size-5" />
-					{post.replyCount}
-				</Button>
-				<PostRepost id={post.id} isRepost={!!post.originalPost} reposts={post.reposts} userId={userId} />
-				<PostLike id={post.id} likes={post.likes} userId={userId} />
-			</CardFooter>
+			{!isRepost && (
+				<CardFooter className="flex items-center justify-between">
+					{/* text-emerald-500 */}
+					<Button variant="ghost" size="lg" className="hover:text-green-500">
+						<MessageCircle className="size-5" />
+						{post.replyCount}
+					</Button>
+					<PostRepost id={post.id} isRepost={!!post.originalPost} reposts={post.reposts} userId={userId} />
+					<PostLike id={post.id} likes={post.likes} userId={userId} />
+				</CardFooter>
+			)}
 		</Card>
 	);
 }

@@ -33,6 +33,7 @@ import { type QuoteSchema, quoteSchema } from './formOptions';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { MarkdownEditor } from '~/components/Markdown';
 import { Input } from '~/components/ui/input';
+import { cn } from '~/lib/utils';
 
 export default function PostRepost({
 	id,
@@ -105,7 +106,7 @@ export default function PostRepost({
 			<Button
 				variant="ghost"
 				size="lg"
-				className={'hover:text-sky-500 ' + (hasUserReposted ? 'text-cyan-500' : '')}
+				className={cn('hover:text-sky-500', hasUserReposted && 'text-cyan-500')}
 				onClick={() => mutation.mutate(id)}
 				disabled={
 					// TODO: for now we temporarily don't allow reposting a repost.
@@ -115,7 +116,7 @@ export default function PostRepost({
 				{mutation.isPending ? (
 					<Loader className="size-5 animate-spin" />
 				) : (
-					<Repeat2 className={'size-5 ' + (hasUserReposted ? 'text-cyan-500' : '')} />
+					<Repeat2 className={cn('size-5', hasUserReposted && 'text-cyan-500')} />
 				)}
 				{reposts}
 			</Button>
@@ -129,7 +130,7 @@ export default function PostRepost({
 					<Button
 						variant="ghost"
 						size="lg"
-						className={'hover:text-sky-500 ' + (hasUserReposted ? 'text-cyan-500' : '')}
+						className={cn('hover:text-sky-500', hasUserReposted && 'text-cyan-500')}
 						disabled={
 							// TODO: for now we temporarily don't allow reposting a repost.
 							!userId || mutation.isPending || isRepost
@@ -138,7 +139,7 @@ export default function PostRepost({
 						{mutation.isPending ? (
 							<Loader className="size-5 animate-spin" />
 						) : (
-							<Repeat2 className={'size-5 ' + (hasUserReposted ? 'text-cyan-500' : '')} />
+							<Repeat2 className={cn('size-5', hasUserReposted && 'text-cyan-500')} />
 						)}
 						{reposts}
 					</Button>

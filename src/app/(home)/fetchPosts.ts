@@ -7,14 +7,15 @@ import type { InfiniteQueryResult } from '~/lib/query';
 export default async function fetchPosts({ pageParam: offset }: { pageParam: number }) {
 	const PAGE_LIMIT = 5;
 	const authorColumns = { createdAt: true, id: true, image: true, name: true, verified: true } as const;
+	const postColumns = { content: true, createdAt: true, id: true, userAgent: true } as const;
 
 	const data = await database.query.post.findMany({
-		columns: { content: true, createdAt: true, id: true, userAgent: true },
+		columns: postColumns,
 		with: {
 			author: { columns: authorColumns },
 			likes: { columns: { id: true }, with: { author: { columns: authorColumns } } },
 			originalPost: {
-				columns: { content: true, createdAt: true },
+				columns: postColumns,
 				with: { author: { columns: authorColumns } },
 			},
 			reposts: {

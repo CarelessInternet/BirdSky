@@ -87,7 +87,16 @@ export default function Dropdown({ session }: { session: Session | null }) {
 					onClick={() =>
 						startTransition(async () => {
 							if (session) {
-								await signOut({ fetchOptions: { onSuccess: () => router.push('/') } });
+								router.refresh();
+								await signOut({
+									// Refresh the page to invalidate the current user cache.
+									fetchOptions: {
+										onSuccess: () => {
+											router.push('/');
+											router.refresh();
+										},
+									},
+								});
 							} else {
 								router.push('/auth/signin');
 							}
