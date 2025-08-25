@@ -1,15 +1,20 @@
 'use client';
 
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../ui/dropdown-menu';
-import { ClipboardCheck, Heart, MoreHorizontal, Share } from 'lucide-react';
+import { ClipboardCheck, MoreHorizontal, RotateCw, Share, UserStar } from 'lucide-react';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { postLikes } from './footer/postLike';
 import { postReposts } from './footer/postRepost';
 import { useQuery } from '@tanstack/react-query';
 import type { post } from '~/lib/database/schema';
 import type { PostLikes, PostReposts } from './types';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { getRelativeTime } from '~/lib/date';
+import { useState } from 'react';
+import Link from 'next/link';
 
 export default function PostDropdown({
 	id,
@@ -20,16 +25,27 @@ export default function PostDropdown({
 	initialLikes: PostLikes;
 	initialReposts: PostReposts;
 }) {
-	const { data: likes } = useQuery({
+	const likes = useQuery({
 		queryKey: ['post-likes', id],
 		queryFn: () => postLikes(id),
 		initialData: initialLikes,
 	});
-	const { data: reposts } = useQuery({
+	const reposts = useQuery({
 		queryKey: ['post-reposts', id],
 		queryFn: () => postReposts(id),
 		initialData: initialReposts,
 	});
+
+	const [tab, setTab] = useState('likes');
+	const isPending = likes.isRefetching || reposts.isRefetching;
+	const refetchData = () => {
+		switch (tab) {
+			case 'likes':
+				return likes.refetch();
+			default:
+				reposts.refetch();
+		}
+	};
 
 	return (
 		<Dialog>
@@ -57,21 +73,75 @@ export default function PostDropdown({
 					</DropdownMenuItem>
 					<DialogTrigger asChild>
 						<DropdownMenuItem className="focus:text-destructive">
-							<Heart />
-							<span>See who liked the post</span>
+							<UserStar />
+							<span>Likes & Reposts</span>
 						</DropdownMenuItem>
 					</DialogTrigger>
 				</DropdownMenuContent>
 			</DropdownMenu>
-			<DialogContent>
+			<DialogContent className="md:max-w-2/3">
 				<DialogHeader>
-					<DialogTitle>wsehew</DialogTitle>
-					<DialogDescription>
-						Likes: {likes.map((like) => like.author.name).join(', ')}
-						<br />
-						Reposts: {reposts.map((repost) => repost.author.name).join(', ')}
-					</DialogDescription>
+					<DialogTitle>View Likes & Reposts</DialogTitle>
 				</DialogHeader>
+				<Tabs value={tab} onValueChange={setTab} className="min-w-0">
+					<TabsList>
+						<TabsTrigger value="likes">Likes</TabsTrigger>
+						<TabsTrigger value="reposts">Reposts</TabsTrigger>
+					</TabsList>
+					<TabsContent value="likes">
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>User</TableHead>
+									<TableHead>User ID</TableHead>
+									<TableHead>Like Date</TableHead>
+									<TableHead>ID</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{likes.data.map((like) => (
+									<TableRow key={like.id}>
+										<TableCell>{like.author.name}</TableCell>
+										<TableCell>{like.author.id}</TableCell>
+										<TableCell suppressHydrationWarning>{getRelativeTime(like.createdAt)}</TableCell>
+										<TableCell>{like.id}</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</TabsContent>
+					<TabsContent value="reposts">
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>ID</TableHead>
+									<TableHead>User</TableHead>
+									<TableHead>User ID</TableHead>
+									<TableHead>Repost Date</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{reposts.data.map((repost) => (
+									<TableRow key={repost.id}>
+										<TableCell>
+											<Link href={`/posts/${repost.id}`} className="underline underline-offset-2">
+												{repost.id}
+											</Link>
+										</TableCell>
+										<TableCell>{repost.author.name}</TableCell>
+										<TableCell>{repost.author.id}</TableCell>
+										<TableCell suppressHydrationWarning>{getRelativeTime(repost.createdAt)}</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</TabsContent>
+				</Tabs>
+				<DialogFooter>
+					<Button onClick={refetchData} disabled={isPending}>
+						<RotateCw /> Refresh
+					</Button>
+				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	);

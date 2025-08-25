@@ -8,16 +8,11 @@ import { database } from '~/lib/database/connection';
 import { post } from '~/lib/database/schema';
 import { errors, rootError, type ActionState } from '~/lib/form';
 import { quoteSchema, type QuoteSchema } from './formOptions';
+import type { PostReposts } from '../types';
 
-export async function postReposts(originalPostId: typeof post.$inferSelect.id) {
-	const session = await auth.api.getSession({ headers: await headers() });
-
-	if (!session) {
-		throw new Error('Not authenticated.');
-	}
-
+export async function postReposts(originalPostId: typeof post.$inferSelect.id): Promise<PostReposts> {
 	return database.query.post.findMany({
-		columns: { id: true },
+		columns: { createdAt: true, id: true },
 		with: { author: { columns: { id: true, image: true, name: true, verified: true } } },
 		where: (post, { eq }) => eq(post.originalPostId, originalPostId),
 		orderBy: (post, { desc }) => desc(post.createdAt),

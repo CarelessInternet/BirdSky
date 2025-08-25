@@ -4,13 +4,14 @@ import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '~/lib/utils';
 import { NavigationMenuLink, navigationMenuTriggerStyle } from '../ui/navigation-menu';
-import type { ComponentProps, PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
+import { Route } from 'next';
 
-export default function Link({
+export default function Link<T extends string>({
 	children,
 	href,
 	sheet = false,
-}: PropsWithChildren<{ href: ComponentProps<typeof NextLink>['href']; sheet?: boolean }>) {
+}: PropsWithChildren<{ href: Route<T>; sheet?: boolean }>) {
 	const pathname = usePathname();
 
 	return sheet ? (

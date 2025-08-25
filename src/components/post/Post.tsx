@@ -91,7 +91,7 @@ export default function Post({
 				<CardHeader className="flex min-w-0 flex-col">
 					{!post.content && (
 						<UserHoverCard author={post.author} userAgent={post.userAgent}>
-							<div className="flex flex-col gap-y-1">
+							<div className="mb-1 flex flex-col gap-y-1">
 								<div className="flex min-w-0 flex-row items-start gap-1.5">
 									<MessageSquareQuote className="mt-1 size-4 shrink-0 self-start" />
 									<span className="flex min-w-0 flex-col">

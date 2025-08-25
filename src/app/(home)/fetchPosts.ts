@@ -8,18 +8,19 @@ export default async function fetchPosts({ pageParam: offset }: { pageParam: num
 	const PAGE_LIMIT = 5;
 	const authorColumns = { createdAt: true, id: true, image: true, name: true, verified: true } as const;
 	const postColumns = { content: true, createdAt: true, id: true, userAgent: true } as const;
+	const interactionsColumns = { createdAt: true, id: true } as const;
 
 	const data = await database.query.post.findMany({
 		columns: postColumns,
 		with: {
 			author: { columns: authorColumns },
-			likes: { columns: { id: true }, with: { author: { columns: authorColumns } } },
+			likes: { columns: interactionsColumns, with: { author: { columns: authorColumns } } },
 			originalPost: {
 				columns: postColumns,
 				with: { author: { columns: authorColumns } },
 			},
 			reposts: {
-				columns: { id: true },
+				columns: interactionsColumns,
 				with: { author: { columns: { id: true, image: true, name: true, verified: true } } },
 			},
 		},
