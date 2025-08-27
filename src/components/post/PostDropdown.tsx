@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { getRelativeTime } from '~/lib/date';
 import { useState } from 'react';
 import Link from 'next/link';
+import { getOS } from '~/lib/getOS';
 
 export default function PostDropdown({
 	id,
@@ -92,19 +93,21 @@ export default function PostDropdown({
 						<Table>
 							<TableHeader>
 								<TableRow>
+									<TableHead>ID</TableHead>
 									<TableHead>User</TableHead>
 									<TableHead>User ID</TableHead>
 									<TableHead>Like Date</TableHead>
-									<TableHead>ID</TableHead>
+									<TableHead>Platform</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
 								{likes.data.map((like) => (
 									<TableRow key={like.id}>
+										<TableCell>{like.id}</TableCell>
 										<TableCell>{like.author.name}</TableCell>
 										<TableCell>{like.author.id}</TableCell>
 										<TableCell suppressHydrationWarning>{getRelativeTime(like.createdAt)}</TableCell>
-										<TableCell>{like.id}</TableCell>
+										<TableCell>{getOS(like.userAgent)}</TableCell>
 									</TableRow>
 								))}
 							</TableBody>
@@ -118,6 +121,7 @@ export default function PostDropdown({
 									<TableHead>User</TableHead>
 									<TableHead>User ID</TableHead>
 									<TableHead>Repost Date</TableHead>
+									<TableHead>Platform</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -131,6 +135,7 @@ export default function PostDropdown({
 										<TableCell>{repost.author.name}</TableCell>
 										<TableCell>{repost.author.id}</TableCell>
 										<TableCell suppressHydrationWarning>{getRelativeTime(repost.createdAt)}</TableCell>
+										<TableCell>{getOS(repost.userAgent)}</TableCell>
 									</TableRow>
 								))}
 							</TableBody>

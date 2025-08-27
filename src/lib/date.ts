@@ -28,7 +28,7 @@ export function getRelativeTime(timestamp: Date) {
 	}
 }
 
-export function getMonthAndYear(timestamp: Date) {
+export function getYearMonthDay(timestamp: Date) {
 	return new Intl.DateTimeFormat('sv-SE', {
 		year: 'numeric',
 		month: '2-digit',

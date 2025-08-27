@@ -1,14 +1,20 @@
 'use server';
 
 import { database } from '~/lib/database/connection';
-import { post, reply } from '~/lib/database/schema';
+import { type commonUserContentFields, post, reply, type user } from '~/lib/database/schema';
 import type { InfiniteQueryResult } from '~/lib/query';
 
 export default async function fetchPosts({ pageParam: offset }: { pageParam: number }) {
 	const PAGE_LIMIT = 5;
-	const authorColumns = { createdAt: true, id: true, image: true, name: true, verified: true } as const;
-	const postColumns = { content: true, createdAt: true, id: true, userAgent: true } as const;
-	const interactionsColumns = { createdAt: true, id: true } as const;
+	const authorColumns = { createdAt: true, id: true, image: true, name: true, verified: true } as Record<
+		keyof typeof user.$inferSelect,
+		true
+	>;
+	const interactionsColumns = { createdAt: true, id: true, userAgent: true } as Record<
+		keyof typeof commonUserContentFields,
+		true
+	>;
+	const postColumns = { content: true, ...interactionsColumns } as Record<keyof typeof post, true>;
 
 	const data = await database.query.post.findMany({
 		columns: postColumns,
@@ -21,7 +27,7 @@ export default async function fetchPosts({ pageParam: offset }: { pageParam: num
 			},
 			reposts: {
 				columns: interactionsColumns,
-				with: { author: { columns: { id: true, image: true, name: true, verified: true } } },
+				with: { author: { columns: authorColumns } },
 			},
 		},
 		// _post is bugged when trying to select from that table.

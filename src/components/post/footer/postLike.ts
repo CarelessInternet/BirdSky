@@ -9,7 +9,7 @@ import type { PostLikes } from '../types';
 
 export async function postLikes(postId: typeof like.$inferSelect.postId): Promise<PostLikes> {
 	return database.query.like.findMany({
-		columns: { createdAt: true, id: true },
+		columns: { createdAt: true, id: true, userAgent: true },
 		with: { author: { columns: { id: true, image: true, name: true, verified: true } } },
 		where: (like, { eq }) => eq(like.postId, postId),
 		orderBy: (like, { desc }) => desc(like.createdAt),

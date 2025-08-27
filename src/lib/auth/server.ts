@@ -27,7 +27,7 @@ export const auth = betterAuth({
 	user: {
 		additionalFields: {
 			verified: {
-				type: 'boolean',
+				type: 'date',
 				required: false,
 				defaultValue: false,
 				input: false,

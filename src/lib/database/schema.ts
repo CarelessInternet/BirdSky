@@ -9,7 +9,7 @@ export const user = pgTable('user', {
 	image: text('image'),
 	createdAt: timestamp('created_at').defaultNow().notNull(),
 	updatedAt: timestamp('updated_at').defaultNow().notNull(),
-	verified: boolean('verified').default(false).notNull(),
+	verified: timestamp('verified'),
 });
 
 export const userRelations = relations(user, ({ many }) => ({
@@ -56,20 +56,24 @@ export const verification = pgTable('verification', {
 	updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+export const commonUserContentFields = {
+	id: uuid('id')
+		.primaryKey()
+		.default(sql`uuidv7()`),
+	userAgent: text('user_agent'),
+	createdAt: timestamp('created_at').defaultNow().notNull(),
+};
+
 export const post = pgTable(
 	'post',
 	{
-		id: uuid('id')
-			.primaryKey()
-			.default(sql`uuidv7()`),
+		...commonUserContentFields,
 		userId: text('user_id')
 			.notNull()
 			.references(() => user.id),
-		userAgent: text('user_agent'),
 		content: text('content'),
 		// Reposts.
 		originalPostId: uuid('original_post_id').references((): AnyPgColumn => post.id, { onDelete: 'cascade' }),
-		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [
 		foreignKey({
@@ -99,17 +103,13 @@ export const postRelations = relations(post, ({ one, many }) => ({
 export const like = pgTable(
 	'like',
 	{
-		id: uuid('id')
-			.primaryKey()
-			.default(sql`uuidv7()`),
+		...commonUserContentFields,
 		userId: text('user_id')
 			.notNull()
 			.references(() => user.id),
-		userAgent: text('user_agent'),
 		postId: uuid('post_id')
 			.notNull()
 			.references(() => post.id, { onDelete: 'cascade' }),
-		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [index().on(table.userId), index().on(table.postId)],
 );
@@ -122,20 +122,16 @@ export const likeRelations = relations(like, ({ one }) => ({
 export const reply = pgTable(
 	'reply',
 	{
-		id: uuid('id')
-			.primaryKey()
-			.default(sql`uuidv7()`),
+		...commonUserContentFields,
 		userId: text('user_id')
 			.notNull()
 			.references(() => user.id),
-		userAgent: text('user_agent'),
 		content: text('content').notNull(),
 		postId: uuid('post_id')
 			.notNull()
 			.references(() => post.id, { onDelete: 'cascade' }),
 		// Nested replies.
 		parentReplyId: uuid('parent_reply_id').references((): AnyPgColumn => reply.id, { onDelete: 'cascade' }),
-		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [
 		foreignKey({
@@ -156,17 +152,13 @@ export const replyRelations = relations(reply, ({ one, many }) => ({
 export const replyLike = pgTable(
 	'reply_like',
 	{
-		id: uuid('id')
-			.primaryKey()
-			.default(sql`uuidv7()`),
+		...commonUserContentFields,
 		userId: text('user_id')
 			.notNull()
 			.references(() => user.id),
-		userAgent: text('user_agent'),
 		replyId: uuid('reply_id')
 			.notNull()
 			.references(() => reply.id, { onDelete: 'cascade' }),
-		createdAt: timestamp('created_at').defaultNow().notNull(),
 	},
 	(table) => [index().on(table.userId), index().on(table.replyId)],
 );

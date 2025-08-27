@@ -12,7 +12,7 @@ import type { PostReposts } from '../types';
 
 export async function postReposts(originalPostId: typeof post.$inferSelect.id): Promise<PostReposts> {
 	return database.query.post.findMany({
-		columns: { createdAt: true, id: true },
+		columns: { createdAt: true, id: true, userAgent: true },
 		with: { author: { columns: { id: true, image: true, name: true, verified: true } } },
 		where: (post, { eq }) => eq(post.originalPostId, originalPostId),
 		orderBy: (post, { desc }) => desc(post.createdAt),

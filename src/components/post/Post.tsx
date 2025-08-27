@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { BadgeCheck, MessageCircle, MessageSquareQuote } from 'lucide-react';
-import { getMonthAndYear, getRelativeTime } from '~/lib/date';
+import { getRelativeTime, getYearMonthDay } from '~/lib/date';
 import { Card, CardHeader, CardContent, CardFooter } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
@@ -34,7 +34,6 @@ function ProfilePicture({ author }: { author: PostData['author'] }) {
 function NameAndVerifiedBadge({ author, truncate = true }: { author: PostData['author']; truncate?: boolean }) {
 	return (
 		<>
-			{/* <span {...(truncate && { className: 'truncate' })}>{author.name}</span> */}
 			<span className={cn('min-w-0 wrap-anywhere', truncate && 'truncate')}>{author.name}</span>
 			{author.verified && (
 				<Tooltip>
@@ -42,7 +41,7 @@ function NameAndVerifiedBadge({ author, truncate = true }: { author: PostData['a
 						<BadgeCheck className="size-5 text-sky-500" />
 					</TooltipTrigger>
 					<TooltipContent side="right">
-						<p>Verified Account</p>
+						<p>Verified Account since {getYearMonthDay(author.verified)}</p>
 					</TooltipContent>
 				</Tooltip>
 			)}
@@ -65,7 +64,7 @@ function UserHoverCard({ author, children, userAgent }: PropsWithChildren<Pick<P
 							<span className="text-muted-foreground truncate text-xs">{author.id}</span>
 							<span className="text-muted-foreground text-xs">BirdSky for {getOS(userAgent)}</span>
 						</div>
-						<p className="text-sm">Joined {getMonthAndYear(author.createdAt)}</p>
+						<p className="text-sm">Joined {getYearMonthDay(author.createdAt)}</p>
 					</div>
 				</div>
 			</HoverCardContent>
