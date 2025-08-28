@@ -10,7 +10,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card'
 import { getOS } from '~/lib/getOS';
 import PostLike from './footer/PostLike';
 // todo: don't rely on fetchPosts type.
-import type { PostData } from '~/app/(home)/fetchPosts';
+import type { PostData } from '~/lib/actions/fetchPosts';
 import PostRepost from './footer/PostRepost';
 import type { Session } from '~/lib/auth/client';
 import PostContent from './PostContent';
@@ -31,7 +31,7 @@ function ProfilePicture({ author }: { author: PostData['author'] }) {
 	);
 }
 
-function NameAndVerifiedBadge({ author, truncate = true }: { author: PostData['author']; truncate?: boolean }) {
+export function NameAndVerifiedBadge({ author, truncate = true }: { author: PostData['author']; truncate?: boolean }) {
 	return (
 		<>
 			<span className={cn('min-w-0 wrap-anywhere', truncate && 'truncate')}>{author.name}</span>

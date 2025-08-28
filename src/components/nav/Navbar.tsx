@@ -4,7 +4,7 @@ import NextLink from 'next/link';
 import Link from './Link';
 import BirdSky from '../../app/favicon.ico';
 import { Button } from '~/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '~/components/ui/sheet';
 import { Input } from '~/components/ui/input';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from '~/components/ui/navigation-menu';
 import Dropdown from './Dropdown';
@@ -50,7 +50,10 @@ export default async function Component() {
 							</Button>
 						</SheetTrigger>
 						<SheetContent side="right" className="p-6">
-							<div className="mt-6 flex flex-col space-y-4">
+							<SheetHeader className="p-0">
+								<SheetTitle>Menu</SheetTitle>
+							</SheetHeader>
+							<div className="flex flex-col space-y-4">
 								<div className="relative">
 									<Search className="text-muted-foreground absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2" />
 									<Input type="search" placeholder="Search..." className="pl-8" />

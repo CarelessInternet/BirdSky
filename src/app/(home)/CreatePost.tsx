@@ -24,7 +24,7 @@ export default function CreatePost() {
 	const [state, action, isPending] = useActionState(createPost, {
 		success: false,
 		errors: {},
-		values: { content: '# Be free!\n\n![BirdSky Logo](birdsky.png)' },
+		values: { content: '# Be free!\n\n![BirdSky Logo](/birdsky.png)' },
 	});
 	const form = useForm<Schema>({
 		mode: 'onTouched',

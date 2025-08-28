@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { MarkdownView } from '../Markdown';
-import useIsOverflow from '../useIsOverflow';
+import useIsOverflowing from '../useIsOverflowing';
 import { FoldVertical, UnfoldVertical } from 'lucide-react';
 
 export default function PostContent({ content }: { content: string }) {
-	const { isOverflow, ref } = useIsOverflow();
+	const { isOverflow, ref } = useIsOverflowing();
 	const [isExpanded, setIsExpanded] = useState(false);
 
 	return (

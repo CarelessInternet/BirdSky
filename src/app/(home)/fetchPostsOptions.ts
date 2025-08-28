@@ -1,5 +1,5 @@
 import { infiniteQueryOptions } from '@tanstack/react-query';
-import fetchPosts from './fetchPosts';
+import { fetchPosts } from '~/lib/actions/fetchPosts';
 
 export const fetchPostsOptions = infiniteQueryOptions({
 	queryKey: ['posts'],

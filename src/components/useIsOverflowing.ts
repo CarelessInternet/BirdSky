@@ -2,7 +2,7 @@
 
 import { useState, useLayoutEffect, useRef } from 'react';
 
-export default function useIsOverflow<T extends HTMLDivElement>() {
+export default function useIsOverflowing<T extends HTMLDivElement>() {
 	const ref = useRef<T>(null);
 	const [isOverflow, setIsOverflow] = useState(false);
 

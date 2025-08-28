@@ -16,7 +16,7 @@ export default async function Page() {
 	void queryClient.prefetchInfiniteQuery(fetchPostsOptions);
 
 	return (
-		<main className="mx-auto mt-4 w-full max-w-2xl px-4 py-4">
+		<main className="mx-auto mt-4 w-full max-w-3xl px-4 py-4">
 			<div className="space-y-16">
 				{session && (
 					<div className="flex justify-center">
