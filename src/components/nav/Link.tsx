@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '~/lib/utils';
 import { NavigationMenuLink, navigationMenuTriggerStyle } from '../ui/navigation-menu';
 import type { PropsWithChildren } from 'react';
-import { Route } from 'next';
+import type { Route } from 'next';
 
 export default function Link<T extends string>({
 	children,

@@ -2,9 +2,10 @@ import type { NextConfig } from 'next';
 
 export default {
 	typedRoutes: true,
+	reactCompiler: false,
 	experimental: {
-		reactCompiler: true,
-		ppr: 'incremental',
+		cacheComponents: true,
+		turbopackFileSystemCacheForDev: true,
 	},
 	images: {
 		unoptimized: true,

@@ -6,6 +6,7 @@ import { database } from '~/lib/database/connection';
 import * as schema from '~/lib/database/schema';
 
 export const auth = betterAuth({
+	telemetry: { enabled: false },
 	secret: env.BETTER_AUTH_SECRET,
 	baseURL: env.BETTER_AUTH_URL,
 	database: drizzleAdapter(database, {

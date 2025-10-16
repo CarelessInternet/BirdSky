@@ -133,7 +133,7 @@ export default function Post({
 						<PostDropdown id={post.id} initialLikes={post.likes} initialReposts={post.reposts} />
 					</div>
 				</CardHeader>
-				{/* This allows screenshotting only the content: */}
+				{/* This div allows screenshotting only the content: */}
 				<div>
 					<Separator orientation="horizontal" />
 					<CardContent className="my-6">
@@ -197,7 +197,7 @@ export default function Post({
 					{!isRepost && <PostDropdown id={post.id} initialLikes={post.likes} initialReposts={post.reposts} />}
 				</div>
 			</CardHeader>
-			{/* This allows screenshotting only the content: */}
+			{/* This div allows screenshotting only the content: */}
 			<div>
 				<Separator orientation="horizontal" />
 				<CardContent className={isRepost ? 'mt-6' : 'my-6'}>

@@ -1,7 +1,7 @@
 services:
   database:
     container_name: birdsky-database
-    image: postgres:18beta3
+    image: postgres:18
     restart: unless-stopped
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready', '-U', 'postgres']
@@ -16,8 +16,6 @@ services:
       POSTGRES_DB: 'BirdSky'
       POSTGRES_USER: 'dev_container'
       POSTGRES_PASSWORD: '12345678'
-    ports:
-      - 5432:5432
 
   # Update this to the name of the service you want to work with in your docker-compose.yml file
   birdsky:
@@ -44,10 +42,8 @@ services:
     environment:
       NODE_ENV: 'development'
 
-# Important to make connections from the bot to the database work!
 networks:
   birdsky-network:
-    driver: bridge
 
 volumes:
   birdsky-database-data:

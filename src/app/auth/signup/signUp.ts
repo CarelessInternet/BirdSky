@@ -11,7 +11,7 @@ export default async function signUp(_: ActionState<Schema>, formData: FormData)
 		name: formData.get('name')?.toString() || '',
 		email: formData.get('email')?.toString() || '',
 		password: formData.get('password')?.toString() || '',
-		image: formData.get('image')?.toString() || null,
+		image: formData.get('image')?.toString() || '',
 	} satisfies Schema;
 	const validation = schema.safeParse(fields);
 

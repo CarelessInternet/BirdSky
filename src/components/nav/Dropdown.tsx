@@ -15,13 +15,14 @@ import {
 	DropdownMenuSubContent,
 } from '../ui/dropdown-menu';
 import { Button } from '../ui/button';
-import { type Session, signOut } from '~/lib/auth/client';
+import { signOut, useSession } from '~/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useTransition } from 'react';
 
-export default function Dropdown({ session }: { session: Session | null }) {
+export default function Dropdown() {
+	const { data: session } = useSession();
 	const router = useRouter();
 	const { setTheme } = useTheme();
 

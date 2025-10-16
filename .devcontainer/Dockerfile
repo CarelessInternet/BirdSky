@@ -1,5 +1,4 @@
-# Temporary, revert to "1" when 1.2.20 is released.
-ARG BUN_MAJOR_VERSION=canary
+ARG BUN_MAJOR_VERSION=1
 
 FROM oven/bun:${BUN_MAJOR_VERSION}-alpine as base
 
